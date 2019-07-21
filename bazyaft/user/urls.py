@@ -5,5 +5,5 @@ app_name = 'user'
 
 urlpatterns = [
 
-    path('UserSignupEmail', views.UserSignupEmail.as_view(), name='UserSignupEmail'),
+    path('KhanevarEmailRegister', views.KhanevarEmailRegister.as_view(), name='KhanevarEmailRegister'),
 ]

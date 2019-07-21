@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .models import Khanevar
 
 
-class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -17,6 +17,24 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+
+
+class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+
+    class Meta:
+        model = Khanevar
+        fields = '__all__'
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        userr = User.objects.create(**user_data)
+        khanevar = Khanevar.objects.create(user=userr,**validated_data)
+        return khanevar
+
 
     # def validate(self, data):
     #     email = data.get("email")

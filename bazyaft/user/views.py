@@ -5,21 +5,21 @@ from rest_framework import status
 from django.core.mail import EmailMessage
 
 
-from .serializers import UserSignupEmailSerializer
+from .serializers import KhanevarEmailRegisterSerializer
 
 
-class UserSignupEmail(APIView):
-    serializer_class = UserSignupEmailSerializer()
+class KhanevarEmailRegister(APIView):
+    serializer_class = KhanevarEmailRegisterSerializer()
 
     def post(self, request, format=None):
-        serializer = UserSignupEmailSerializer(data=request.data)
+        serializer = KhanevarEmailRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             dic = serializer.data
             dic.update({'status':'101'})
             # print(serializer.data)
-            email = EmailMessage('email_subject', "message", to=['younesmoradi313@gmail.com',])
-            email.send()
+            # email = EmailMessage('email_subject', "message", to=['younesmoradi313@gmail.com',])
+            # email.send()
             return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -49,5 +49,5 @@ class UserSignupEmail(APIView):
                         dic['status'].append('111')
             except:
                 pass
-            return Response(dic , status=status.HTTP_400_BAD_REQUEST)
-            # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+            # return Response(dic , status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
