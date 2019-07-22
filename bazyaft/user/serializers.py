@@ -13,11 +13,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        user = super(UserSerializer, self).create(validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
 
+        return User.objects.create_user( **validated_data)
+
+    def validate(self, data):
+        email = data.get("email")
+
+        if len(User.objects.filter(email=email)) > 0:
+            raise ValidationError("102")
+        if not email or email=='':
+            raise ValidationError("105")
+
+        return data
 
 
 
@@ -31,8 +38,8 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        userr = User.objects.create(**user_data)
-        khanevar = Khanevar.objects.create(user=userr,**validated_data)
+        user = User.objects.create_user(**user_data)
+        khanevar = Khanevar.objects.create(user=user,**validated_data)
         return khanevar
 
 
