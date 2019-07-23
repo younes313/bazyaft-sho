@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from .models import Khanevar
+from .models import Khanevar , Edari , EdariType
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,3 +54,10 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
     #
     #     else:
     #         return data
+
+
+class EdariTypeAddSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EdariType
+        fields = '__all__'
