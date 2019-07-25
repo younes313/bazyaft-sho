@@ -15,12 +15,20 @@ class Khanevar(models.Model):
 
 
 
-class EdariType(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
 class Edari(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    type = models.ForeignKey(EdariType, on_delete=models.CASCADE)
+    type = models.CharField(max_length=50,blank=True)
+    coins = models.PositiveIntegerField(default=0)
+    phone_number = models.CharField(max_length=20, blank=True)
+    is_email_confirmed = models.BooleanField(default=False)
+    is_number_confirmed = models.BooleanField(default=False)
+    location = models.TextField(blank=True)
+
+
+
+class Tegari(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=50,blank=True)
     coins = models.PositiveIntegerField(default=0)
     phone_number = models.CharField(max_length=20, blank=True)
     is_email_confirmed = models.BooleanField(default=False)

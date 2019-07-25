@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from .models import Khanevar , Edari , EdariType
+from .models import Khanevar , Edari , Tegari
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -43,21 +43,32 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
         return khanevar
 
 
-    # def validate(self, data):
-    #     email = data.get("email")
-    #     password = data.get("password")
-    #
-    #
-    #     # if
-    #     if len(password) < 6:
-    #         raise ValidationError("110")
-    #
-    #     else:
-    #         return data
 
-
-class EdariTypeAddSerializer(serializers.ModelSerializer):
-
+class EdariEmailRegisterSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
-        model = EdariType
+        model = Edari
         fields = '__all__'
+
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = User.objects.create_user(**user_data)
+
+        edari = Edari.objects.create(user=user, **validated_data)
+        return edari
+
+
+class TegariEmailRegisterSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Tegari
+        fields = '__all__'
+
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = User.objects.create_user(**user_data)
+
+        tegari = Tegari.objects.create(user=user, **validated_data)
+        return tegari
