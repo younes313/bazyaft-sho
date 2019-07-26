@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .models import Khanevar , Edari , Tegari
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserKhanevarSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -27,9 +27,30 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
 
+class UserEdariTegariSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = '__all__'
+
+    def create(self, validated_data):
+
+        return User.objects.create_user( **validated_data)
+
+    def validate(self, data):
+        email = data.get("email")
+
+        if len(User.objects.filter(email=email)) > 0:
+            raise ValidationError("102")
+
+        return data
+
+
+
 
 class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserKhanevarSerializer()
 
 
     class Meta:
@@ -45,7 +66,7 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
 
 
 class EdariEmailRegisterSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserEdariTegariSerializer()
     class Meta:
         model = Edari
         fields = '__all__'
@@ -60,7 +81,7 @@ class EdariEmailRegisterSerializer(serializers.ModelSerializer):
 
 
 class TegariEmailRegisterSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserEdariTegariSerializer()
     class Meta:
         model = Tegari
         fields = '__all__'
