@@ -5,7 +5,8 @@ from rest_framework import status
 from django.core.mail import EmailMessage
 from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework.decorators import api_view, permission_classes
-
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 from .serializers import KhanevarEmailRegisterSerializer  ,EdariEmailRegisterSerializer, TegariEmailRegisterSerializer
 
@@ -18,11 +19,15 @@ class KhanevarEmailRegister(APIView):
         serializer = KhanevarEmailRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            dic = serializer.data
-            dic.update({'status':'101'})
+            dic = {'data' :serializer.data }
+            dic.update({'status': True})
+            dic['data'].update({'status':'101'})
             # print(serializer.data)
             # email = EmailMessage('email_subject', "message", to=['younesmoradi313@gmail.com',])
             # email.send()
+            user = User.objects.get(username = serializer.data['user']['username'])
+            token, created = Token.objects.get_or_create(user=user)
+            dic['data'].update({"token" : token.key})
             return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -51,8 +56,9 @@ class KhanevarEmailRegister(APIView):
 
             except:
                 pass
-            # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-            return Response(dic , status=status.HTTP_400_BAD_REQUEST)
+            dic2 = {'status':False , 'data': dic}
+            # return Response(serializer.errors , sta   tus=status.HTTP_400_BAD_REQUEST)
+            return Response(dic2 , status=status.HTTP_201_CREATED)
 
 
 @permission_classes((IsAuthenticated,))
@@ -73,8 +79,13 @@ class EdariEmailRegister(APIView):
         serializer = EdariEmailRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            dic = serializer.data
-            dic.update({'status':'101'})
+            dic = {'data' :serializer.data }
+            dic.update({'status': True})
+            dic['data'].update({'status':'101'})
+
+            user = User.objects.get(username = serializer.data['user']['username'])
+            token, created = Token.objects.get_or_create(user=user)
+            dic['data'].update({"token" : token.key})
             return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -103,8 +114,9 @@ class EdariEmailRegister(APIView):
 
             except:
                 pass
+            dic2 = {'status':False , 'data': dic}
             # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(dic , status=status.HTTP_400_BAD_REQUEST)
+            return Response(dic2 , status=status.HTTP_201_CREATED)
 
 
 
@@ -117,8 +129,13 @@ class TegariEmailRegister(APIView):
         serializer = TegariEmailRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            dic = serializer.data
-            dic.update({'status':'101'})
+            dic = {'data' :serializer.data }
+            dic.update({'status': True})
+            dic['data'].update({'status':'101'})
+
+            user = User.objects.get(username = serializer.data['user']['username'])
+            token, created = Token.objects.get_or_create(user=user)
+            dic['data'].update({"token" : token.key})
             return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -147,5 +164,6 @@ class TegariEmailRegister(APIView):
 
             except:
                 pass
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            # return Response(dic , status=status.HTTP_400_BAD_REQUEST)
+            dic2 = {'status':False , 'data': dic}
+            # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(dic2 , status=status.HTTP_201_CREATED)
