@@ -4,6 +4,14 @@ from django.contrib.auth.models import User
 
 from .models import Khanevar , Edari , Tegari
 
+class GetTokenEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(max_length=256)
+
+
+class GetTokenPhoneSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=256)
+    code = serializers.IntegerField()
 
 class UserKhanevarSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -21,8 +29,8 @@ class UserKhanevarSerializer(serializers.ModelSerializer):
 
         if len(User.objects.filter(email=email)) > 0:
             raise ValidationError("102")
-        if not email or email=='':
-            raise ValidationError("105")
+        # if not email or email=='':
+        #     raise ValidationError("105")
 
         return data
 

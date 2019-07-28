@@ -11,6 +11,7 @@ class Khanevar(models.Model):
     is_email_confirmed = models.BooleanField(default=False)
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
+    code = models.IntegerField(default=0)
 
 
 
@@ -23,6 +24,7 @@ class Edari(models.Model):
     is_email_confirmed = models.BooleanField(default=False)
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
+    code = models.IntegerField(default=0)
 
 
 
@@ -34,3 +36,4 @@ class Tegari(models.Model):
     is_email_confirmed = models.BooleanField(default=False)
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
+    code = models.IntegerField(default=0)
