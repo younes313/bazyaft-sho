@@ -12,7 +12,25 @@ from django.contrib.auth import authenticate
 from random import randint
 from datetime import datetime
 
-from .serializers import KhanevarEmailRegisterSerializer  ,EdariEmailRegisterSerializer, TegariEmailRegisterSerializer , GetTokenEmailSerializer ,GetTokenPhoneSerializer
+from .models import Order
+from .serializers import KhanevarEmailRegisterSerializer  ,EdariEmailRegisterSerializer, TegariEmailRegisterSerializer , GetTokenEmailSerializer ,GetTokenPhoneSerializer, OrderSerializer
+
+
+
+@permission_classes((IsAuthenticated,))
+class GetOrder(APIView):
+
+    def post(self, request, format=None):
+        serializer = OrderSerializer(data = request.data)
+        if serializer.is_valid():
+
+            order = Order.objects.create(user=request.user, **serializer.validated_data)
+            # print(order)
+            # token = Token.objects.get(serializer.data['token'])
+
+            return Response(serializer.data , status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes((AllowAny,))

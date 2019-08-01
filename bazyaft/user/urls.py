@@ -6,9 +6,10 @@ from . import views
 app_name = 'user'
 
 urlpatterns = [
-    # path('GetTokenPhone', views.GetTokenPhone.as_view() , name='GetTokenPhone'),
+    # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
 
+    path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
     path('GetTokenPhone', views.GetTokenPhone.as_view() , name='GetTokenPhone'),
     path('UserLogout', views.UserLogout.as_view() , name='UserLogout'),
     path('TegariEmailRegister', views.TegariEmailRegister.as_view() , name='TegariEmailRegister'),

@@ -2,7 +2,11 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from .models import Khanevar , Edari , Tegari
+from .models import Khanevar , Edari , Tegari , Order
+
+
+
+
 
 class GetTokenEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -101,3 +105,33 @@ class TegariEmailRegisterSerializer(serializers.ModelSerializer):
 
         tegari = Tegari.objects.create(user=user, **validated_data)
         return tegari
+
+
+class OrderSerializer(serializers.Serializer):
+    # user = serializers.HiddenField( default=serializers.CurrentUserDefault() )
+    # user = UserKhanevarSerializer()
+    location_x = serializers.IntegerField(default=0)
+    location_y = serializers.IntegerField(default=0)
+
+    kaghaz_moghava = serializers.IntegerField(default=0)
+    shishe = serializers.IntegerField(default=0)
+    felezat = serializers.IntegerField(default=0)
+    parche = serializers.IntegerField(default=0)
+    zarf_alminium = serializers.IntegerField(default=0)
+    naan = serializers.IntegerField(default=0)
+    lastik = serializers.IntegerField(default=0)
+    darb_plastici = serializers.IntegerField(default=0)
+    ahan_sangin = serializers.IntegerField(default=0)
+    ahan_sabok = serializers.IntegerField(default=0)
+    batery = serializers.IntegerField(default=0)
+    alminium_sanati = serializers.IntegerField(default=0)
+    khoshk_darham = serializers.IntegerField(default=0)
+    khoshk_tafkik_nashode = serializers.IntegerField(default=0)
+    zayeat_elecronic = serializers.IntegerField(default=0)
+    ehdaye_daroo = serializers.IntegerField(default=0)
+    score = serializers.IntegerField(default=0)
+
+    
+    # class Meta:
+    #     model = Order
+    #     fields = "__all__"
