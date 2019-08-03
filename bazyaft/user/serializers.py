@@ -113,25 +113,28 @@ class OrderSerializer(serializers.Serializer):
     location_x = serializers.IntegerField(default=0)
     location_y = serializers.IntegerField(default=0)
 
-    kaghaz_moghava = serializers.IntegerField(default=0)
+    alminium = serializers.IntegerField(default=0)
+    pet = serializers.IntegerField(default=0)
+    khoshk = serializers.IntegerField(default=0)
+    daftar_ketab = serializers.IntegerField(default=0)
     shishe = serializers.IntegerField(default=0)
-    felezat = serializers.IntegerField(default=0)
     parche = serializers.IntegerField(default=0)
-    zarf_alminium = serializers.IntegerField(default=0)
     naan = serializers.IntegerField(default=0)
-    lastik = serializers.IntegerField(default=0)
-    darb_plastici = serializers.IntegerField(default=0)
+
+    kaghaz_moghava = serializers.IntegerField(default=0)
+    felezat = serializers.IntegerField(default=0)
     ahan_sangin = serializers.IntegerField(default=0)
     ahan_sabok = serializers.IntegerField(default=0)
-    batery = serializers.IntegerField(default=0)
-    alminium_sanati = serializers.IntegerField(default=0)
-    khoshk_darham = serializers.IntegerField(default=0)
-    khoshk_tafkik_nashode = serializers.IntegerField(default=0)
     zayeat_elecronic = serializers.IntegerField(default=0)
-    ehdaye_daroo = serializers.IntegerField(default=0)
+
     score = serializers.IntegerField(default=0)
 
-    
-    # class Meta:
-    #     model = Order
-    #     fields = "__all__"
+    pelak_melak = serializers.CharField()
+
+
+
+class OrderDriverSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Order
+        fields = "__all__"

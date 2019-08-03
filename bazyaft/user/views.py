@@ -13,7 +13,7 @@ from random import randint
 from datetime import datetime
 
 from .models import Order
-from .serializers import KhanevarEmailRegisterSerializer  ,EdariEmailRegisterSerializer, TegariEmailRegisterSerializer , GetTokenEmailSerializer ,GetTokenPhoneSerializer, OrderSerializer
+from .serializers import *
 
 
 
@@ -25,10 +25,11 @@ class GetOrder(APIView):
         if serializer.is_valid():
 
             order = Order.objects.create(user=request.user, **serializer.validated_data)
-            # print(order)
-            # token = Token.objects.get(serializer.data['token'])
 
-            return Response(serializer.data , status=status.HTTP_200_OK)
+            dic = {'user_id': request.user.id , 'order_id' : order.id }
+            dic.update(serializer.data)
+
+            return Response(dic , status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -99,6 +100,7 @@ class GetTokenEmail(APIView):
         else:
             return Response(serializer.errors , status = status.HTTP_400_BAD_REQUEST)
 
+
 @permission_classes((AllowAny,))
 class KhanevarEmailRegister(APIView):
     serializer_class = KhanevarEmailRegisterSerializer()
@@ -155,6 +157,7 @@ class KhanevarEmailRegister(APIView):
             # return Response(serializer.errors , sta   tus=status.HTTP_400_BAD_REQUEST)
             return Response(dic2 , status=status.HTTP_201_CREATED)
 
+
 @permission_classes((IsAuthenticated,))
 class GetMyCoins(APIView):
 
@@ -163,6 +166,7 @@ class GetMyCoins(APIView):
             return Response( {'coins':request.user.khanevar.coins , } , status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @permission_classes((AllowAny,))
 class EdariEmailRegister(APIView):
@@ -217,6 +221,7 @@ class EdariEmailRegister(APIView):
             dic2 = {'status':False , 'data': dic}
             # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(dic2 , status=status.HTTP_201_CREATED)
+
 
 @permission_classes((AllowAny,))
 class TegariEmailRegister(APIView):
