@@ -129,7 +129,7 @@ class OrderSerializer(serializers.Serializer):
 
     score = serializers.IntegerField(default=0)
 
-    pelak_melak = serializers.CharField()
+    pelak_melak = serializers.CharField(default="")
 
 
 
