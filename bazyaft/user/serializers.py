@@ -71,6 +71,16 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
         model = Khanevar
         fields = '__all__'
 
+    def validate_phone_number(self, value):
+        if value != "":
+            if Khanevar.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Edari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Tegari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+        return value
+
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
@@ -84,6 +94,16 @@ class EdariEmailRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Edari
         fields = '__all__'
+
+    def validate_phone_number(self, value):
+        if value != "":
+            if Khanevar.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Edari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Tegari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+        return value
 
 
     def create(self, validated_data):
@@ -99,6 +119,17 @@ class TegariEmailRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tegari
         fields = '__all__'
+
+
+    def validate_phone_number(self, value):
+        if value != "":
+            if Khanevar.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Edari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+            if Tegari.objects.filter(phone_number=value).exists():
+                raise ValidationError("120")
+        return value
 
 
     def create(self, validated_data):

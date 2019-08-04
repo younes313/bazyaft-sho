@@ -186,8 +186,12 @@ class KhanevarEmailRegister(APIView):
 
             except:
                 pass
+            try:
+                dic['status'].extend(serializer.errors['phone_number'])
+            except:
+                pass
             dic2 = {'status':False , 'data': dic}
-            # return Response(serializer.errors , sta   tus=status.HTTP_400_BAD_REQUEST)
+            # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
             return Response(dic2 , status=status.HTTP_201_CREATED)
 
 
@@ -251,6 +255,11 @@ class EdariEmailRegister(APIView):
 
             except:
                 pass
+
+            try:
+                dic['status'].extend(serializer.errors['phone_number'])
+            except:
+                pass
             dic2 = {'status':False , 'data': dic}
             # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(dic2 , status=status.HTTP_201_CREATED)
@@ -304,6 +313,11 @@ class TegariEmailRegister(APIView):
                     if str(err) ==  "This field may not be blank.":
                         dic['status'].append('111')
 
+            except:
+                pass
+
+            try:
+                dic['status'].extend(serializer.errors['phone_number'])
             except:
                 pass
             dic2 = {'status':False , 'data': dic}
