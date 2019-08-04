@@ -1,6 +1,7 @@
 # from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import HttpResponse
 from rest_framework import status
 from django.core.mail import EmailMessage
 from rest_framework.permissions import IsAuthenticated , AllowAny
@@ -8,6 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.shortcuts import redirect
 
 from random import randint
 from datetime import datetime
@@ -15,6 +17,19 @@ from datetime import datetime
 from .models import Order
 from .serializers import *
 
+
+from PIL import Image
+
+@permission_classes((AllowAny,))
+class image_view(APIView):
+
+    def get(self, request ,format=None):
+
+        try:
+            img  = Image.open("static/images/a.png")
+        except:
+            return Response({"sd":"Sdf"} , status=status.HTTP_400_BAD_REQUEST)
+        return redirect("/../static/images/a.png")
 
 
 @permission_classes((IsAuthenticated,))
@@ -45,30 +60,28 @@ class GetTokenPhone(APIView):
                 try :
                     if str(user.khanevar.code) == str(serializer.data['code']) :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
                 except:
-                    # pass
-                    print("khanevar")
+                    pass
                 try :
                     if user.edari.code == serializer.data['code'] :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
                 except:
-                    # pass
-                    print("edari")
+                    pass
                 try :
                     if user.tegari.code == serializer.data['code'] :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
                 except:
                     pass
             except:
-                return Response(status = status.HTTP_400_BAD_REQUEST)
+                return Response( {"status":False , "error" : "101"} , status = status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, tatus = status.HTTP_400_BAD_REQUEST)
+            return Response({"status":False , "error" : "103"}, status = status.HTTP_200_OK)
 
 
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+        return Response({"status":False , "error" : "102"}, status = status.HTTP_200_OK)
 
 
 @permission_classes((IsAuthenticated,))
@@ -82,6 +95,23 @@ class UserLogout(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@permission_classes((AllowAny,))
+class GetTokenUsername(APIView):
+
+    def post(self, request, format=None):
+        serializer = GetTokenUsernameSerializer(data = request.data)
+        if serializer.is_valid():
+            userr = authenticate(request=request, username=serializer.data['username'], password=serializer.data['password'])
+            if not userr:
+                dic = { "status":False , "error" : "101"    }
+                return Response(dic, status = status.HTTP_200_OK)
+            token , _ = Token.objects.get_or_create(user=userr)
+            return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+        else:
+            dic = { "status":False , "error" : "103"    }
+            return Response(dic, status = status.HTTP_200_OK)
+
 @permission_classes((AllowAny,))
 class GetTokenEmail(APIView):
 
@@ -92,13 +122,16 @@ class GetTokenEmail(APIView):
                 user = User.objects.get(email = serializer.data["email"])
                 userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
                 if not userr:
-                    return Response(status = status.HTTP_400_BAD_REQUEST)
+                    dic = { "status":False , "error" : "101"    }
+                    return Response(dic, status = status.HTTP_200_OK)
                 token , _ = Token.objects.get_or_create(user=user)
-                return Response({"token":token.key}, status=status.HTTP_200_OK)
+                return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
             except:
-                return Response(status = status.HTTP_400_BAD_REQUEST)
+                dic = { "status":False , "error" : "102"    }
+                return Response(dic, status = status.HTTP_200_OK)
         else:
-            return Response(serializer.errors , status = status.HTTP_400_BAD_REQUEST)
+            dic = { "status":False , "error" : "103"    }
+            return Response(dic, status = status.HTTP_200_OK)
 
 
 @permission_classes((AllowAny,))

@@ -6,7 +6,9 @@ from .models import Khanevar , Edari , Tegari , Order
 
 
 
-
+class GetTokenUsernameSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=256)
+    password = serializers.CharField(max_length=256)
 
 class GetTokenEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
