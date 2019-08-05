@@ -1,6 +1,7 @@
 # from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 class Order(models.Model):
@@ -42,6 +43,7 @@ class Khanevar(models.Model):
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
     code = models.IntegerField(default=0)
+    code_time = models.DateTimeField(default=timezone.now )
 
 
 
@@ -55,6 +57,7 @@ class Edari(models.Model):
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
     code = models.IntegerField(default=0)
+    code_time = models.DateTimeField(default=timezone.now)
 
 
 
@@ -67,3 +70,4 @@ class Tegari(models.Model):
     is_number_confirmed = models.BooleanField(default=False)
     location = models.TextField(blank=True)
     code = models.IntegerField(default=0)
+    code_time = models.DateTimeField(default=timezone.now )

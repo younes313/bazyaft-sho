@@ -12,11 +12,16 @@ from django.contrib.auth import authenticate
 from django.shortcuts import redirect
 
 from random import randint
-from datetime import datetime
+from datetime import datetime ,timedelta
 
 from .models import Order
 from .serializers import *
 
+from django.utils import timezone
+
+import pytz
+
+utc=pytz.UTC
 
 
 @permission_classes((IsAuthenticated,))
@@ -45,47 +50,86 @@ class GetTokenPhonenumber(APIView):
         if serializer.is_valid():
             try:
                 user = Khanevar.objects.get(phone_number = serializer.data["phone_number"]).user
-                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                if not userr:
-                    dic = { "status":False , "error" : "121"    }
-                    return Response(dic, status = status.HTTP_200_OK)
-                token , _ = Token.objects.get_or_create(user=user)
-                user_type = "khanevar"
+                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                # if not userr:
+                #     dic = { "status":False , "error" : "121"    }
+                #     return Response(dic, status = status.HTTP_200_OK)
+                # token , _ = Token.objects.get_or_create(user=user)
+                # user_type = "khanevar"
 
-                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                if user.khanevar.code_time.year == timezone.now().year and user.khanevar.code_time.month == timezone.now().month and user.khanevar.code_time.day == timezone.now().day and user.khanevar.code_time.hour == timezone.now().hour:
+                    if user.khanevar.code_time.minute == timezone.now().minute:
+                        remain = 60 -  (timezone.now().second - user.khanevar.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                    elif (timezone.now().minute - user.khanevar.code_time.minute) == 1  and  (timezone.now().second < user.khanevar.code_time.second):
+                        remain = 60 - (timezone.now().second + 60 - user.khanevar.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                code = randint(100000 , 999999)
+                # dic['data']['code'] = code
+                user.khanevar.code = code
+                user.khanevar.code_time = timezone.now()
+                user.khanevar.save()
+                return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
+                # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
             except:
                 pass
             try:
                 user = Edari.objects.get(phone_number = serializer.data["phone_number"]).user
-                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                if not userr:
-                    dic = { "status":False , "error" : "121"    }
-                    return Response(dic, status = status.HTTP_200_OK)
-                token , _ = Token.objects.get_or_create(user=user)
-                user_type = "edari"
+                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                # if not userr:
+                #     dic = { "status":False , "error" : "121"    }
+                #     return Response(dic, status = status.HTTP_200_OK)
+                # token , _ = Token.objects.get_or_create(user=user)
+                # user_type = "edari"
 
-                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                if user.edari.code_time.year == timezone.now().year and user.edari.code_time.month == timezone.now().month and user.edari.code_time.day == timezone.now().day and user.edari.code_time.hour == timezone.now().hour:
+                    if user.edari.code_time.minute == timezone.now().minute:
+                        remain = 60 -  (timezone.now().second - user.edari.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                    elif (timezone.now().minute - user.edari.code_time.minute) == 1 and  (timezone.now().second < user.edari.code_time.second):
+                        remain = 60 - (timezone.now().second + 60 - user.edari.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                code = randint(100000 , 999999)
+                # dic['data']['code'] = code
+                user.edari.code = code
+                user.edari.code_time = timezone.now()
+                user.edari.save()
+                return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
             except:
                 pass
             try:
                 user = Tegari.objects.get(phone_number = serializer.data["phone_number"]).user
-                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                if not userr:
-                    dic = { "status":False , "error" : "121"    }
-                    return Response(dic, status = status.HTTP_200_OK)
-                token , _ = Token.objects.get_or_create(user=user)
-                user_type = "tegari"
-
-                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                # if not userr:
+                #     dic = { "status":False , "error" : "121"    }
+                #     return Response(dic, status = status.HTTP_200_OK)
+                # token , _ = Token.objects.get_or_create(user=user)
+                # user_type = "tegari"
+                #
+                # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                if user.tegari.code_time.year == timezone.now().year and user.tegari.code_time.month == timezone.now().month and user.tegari.code_time.day == timezone.now().day and user.tegari.code_time.hour == timezone.now().hour:
+                    if user.tegari.code_time.minute == timezone.now().minute:
+                        remain = 60 -  (timezone.now().second - user.tegari.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                    elif (timezone.now().minute - user.tegari.code_time.minute) == 1 and  (timezone.now().second < user.tegari.code_time.second):
+                        remain = 60 - (timezone.now().second + 60 - user.tegari.code_time.second)
+                        return Response({"status":False, 'error':'130', 'remain':remain }, status=status.HTTP_200_OK)
+                code = randint(100000 , 999999)
+                # dic['data']['code'] = code
+                user.tegari.code = code
+                user.tegari.code_time = timezone.now()
+                user.tegari.save()
+                return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
             except:
                 pass
 
-            dic = { "status":False , "error" : "122"    }
+            dic = { "status":False , "error" : "131"    }
             return Response(dic, status = status.HTTP_200_OK)
 
 
         else:
-            dic = { "status":False , "error" : "114"    }
+            dic = { "status":False , "error" : "132"    }
             return Response(dic, status = status.HTTP_200_OK)
 
 
@@ -94,6 +138,14 @@ class GetTokenPhonenumber(APIView):
 @permission_classes((AllowAny,))
 class GetTokenPhone(APIView):
 
+    def LessThanOneMinute(self, now, generated_time):
+        if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
+            if generated_time.minute == now.minute:
+                return True
+            elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
+                return True
+        return False
+
     def post(self, request, format=None):
         serializer = GetTokenPhoneSerializer(data = request.data)
         if serializer.is_valid():
@@ -101,18 +153,24 @@ class GetTokenPhone(APIView):
                 user = User.objects.get(username = serializer.data["username"])
                 try :
                     if str(user.khanevar.code) == str(serializer.data['code']) :
+                        if not self.LessThanOneMinute(timezone.now(), user.khanevar.code_time):
+                            return Response( {"status":False , "error" : "140"} , status = status.HTTP_200_OK)
                         token , _ = Token.objects.get_or_create(user=user)
                         return Response({"status":True, "token":token.key, "user_type":"khanevar"}, status=status.HTTP_200_OK)
                 except:
                     pass
                 try :
                     if user.edari.code == serializer.data['code'] :
+                        if not self.LessThanOneMinute(timezone.now(), user.edari.code_time):
+                            return Response( {"status":False , "error" : "140"} , status = status.HTTP_200_OK)
                         token , _ = Token.objects.get_or_create(user=user)
                         return Response({"status":True, "token":token.key, "user_type":"edari"}, status=status.HTTP_200_OK)
                 except:
                     pass
                 try :
                     if user.tegari.code == serializer.data['code'] :
+                        if not self.LessThanOneMinute(timezone.now(), user.tegari.code_time):
+                            return Response( {"status":False , "error" : "140"} , status = status.HTTP_200_OK)
                         token , _ = Token.objects.get_or_create(user=user)
                         return Response({"status":True, "token":token.key, "user_type":"tegari"}, status=status.HTTP_200_OK)
                 except:
@@ -207,6 +265,7 @@ class KhanevarEmailRegister(APIView):
                 code = randint(100000 , 999999)
                 dic['data']['code'] = code
                 user.khanevar.code = code
+                user.khanevar.code_time = timezone.now()
                 user.khanevar.save()
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
@@ -276,6 +335,7 @@ class EdariEmailRegister(APIView):
                 code = randint(100000 , 999999)
                 dic['data']['code'] = code
                 user.edari.code = code
+                user.edari.code_time = timezone.now()
                 user.edari.save()
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
@@ -336,6 +396,7 @@ class TegariEmailRegister(APIView):
                 code = randint(100000 , 999999)
                 dic['data']['code'] = code
                 user.tegari.code = code
+                user.tegari.code_time = timezone.now()
                 user.tegari.save()
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
