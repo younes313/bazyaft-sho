@@ -8,7 +8,8 @@ app_name = 'user'
 urlpatterns = [
     # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
-    
+
+    path('GetTokenPhonenumber', views.GetTokenPhonenumber.as_view() , name='GetTokenPhonenumber'),
     path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
     path('UserLogout', views.UserLogout.as_view() , name='UserLogout'),
     path('GetMyCoins', views.GetMyCoins.as_view() , name='GetMyCoins'),

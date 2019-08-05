@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from .models import Khanevar , Edari , Tegari , Order
 
 
+class GetTokenPhonenumberSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=20)
+    password = serializers.CharField(max_length=256)
 
 class GetTokenUsernameSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=256)

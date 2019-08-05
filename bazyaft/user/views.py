@@ -36,6 +36,61 @@ class GetOrder(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@permission_classes((AllowAny,))
+class GetTokenPhonenumber(APIView):
+
+    def post(self, request, format=None):
+        serializer = GetTokenPhonenumberSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = Khanevar.objects.get(phone_number = serializer.data["phone_number"]).user
+                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                if not userr:
+                    dic = { "status":False , "error" : "121"    }
+                    return Response(dic, status = status.HTTP_200_OK)
+                token , _ = Token.objects.get_or_create(user=user)
+                user_type = "khanevar"
+
+                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+            except:
+                pass
+            try:
+                user = Edari.objects.get(phone_number = serializer.data["phone_number"]).user
+                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                if not userr:
+                    dic = { "status":False , "error" : "121"    }
+                    return Response(dic, status = status.HTTP_200_OK)
+                token , _ = Token.objects.get_or_create(user=user)
+                user_type = "edari"
+
+                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+            except:
+                pass
+            try:
+                user = Tegari.objects.get(phone_number = serializer.data["phone_number"]).user
+                userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
+                if not userr:
+                    dic = { "status":False , "error" : "121"    }
+                    return Response(dic, status = status.HTTP_200_OK)
+                token , _ = Token.objects.get_or_create(user=user)
+                user_type = "tegari"
+
+                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+            except:
+                pass
+
+            dic = { "status":False , "error" : "122"    }
+            return Response(dic, status = status.HTTP_200_OK)
+
+
+        else:
+            dic = { "status":False , "error" : "114"    }
+            return Response(dic, status = status.HTTP_200_OK)
+
+
+
+
 @permission_classes((AllowAny,))
 class GetTokenPhone(APIView):
 
@@ -47,19 +102,19 @@ class GetTokenPhone(APIView):
                 try :
                     if str(user.khanevar.code) == str(serializer.data['code']) :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key, "user_type":"khanevar"}, status=status.HTTP_200_OK)
                 except:
                     pass
                 try :
                     if user.edari.code == serializer.data['code'] :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key, "user_type":"edari"}, status=status.HTTP_200_OK)
                 except:
                     pass
                 try :
                     if user.tegari.code == serializer.data['code'] :
                         token , _ = Token.objects.get_or_create(user=user)
-                        return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+                        return Response({"status":True, "token":token.key, "user_type":"tegari"}, status=status.HTTP_200_OK)
                 except:
                     pass
             except:
@@ -94,7 +149,13 @@ class GetTokenUsername(APIView):
                 dic = { "status":False , "error" : "115"    }
                 return Response(dic, status = status.HTTP_200_OK)
             token , _ = Token.objects.get_or_create(user=userr)
-            return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+            if hasattr(userr , "khanevar"):
+                user_type = "khanevar"
+            elif hasattr(userr , "edari"):
+                user_type = "edari"
+            elif hasattr(userr , "tegari"):
+                user_type = "tegari"
+            return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
         else:
             dic = { "status":False , "error" : "114"    }
             return Response(dic, status = status.HTTP_200_OK)
@@ -112,7 +173,13 @@ class GetTokenEmail(APIView):
                     dic = { "status":False , "error" : "116"    }
                     return Response(dic, status = status.HTTP_200_OK)
                 token , _ = Token.objects.get_or_create(user=user)
-                return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
+                if hasattr(userr , "khanevar"):
+                    user_type = "khanevar"
+                elif hasattr(userr , "edari"):
+                    user_type = "edari"
+                elif hasattr(userr , "tegari"):
+                    user_type = "tegari"
+                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
             except:
                 dic = { "status":False , "error" : "117"    }
                 return Response(dic, status = status.HTTP_200_OK)
@@ -144,7 +211,7 @@ class KhanevarEmailRegister(APIView):
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)
-                dic['data'].update({"token" : token.key})
+                dic['data'].update({"token" : token.key ,"user_type":"khanevar"})
                 return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -213,7 +280,7 @@ class EdariEmailRegister(APIView):
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)
-                dic['data'].update({"token" : token.key})
+                dic['data'].update({"token" : token.key, "user_type":"edari"})
                 return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
@@ -273,7 +340,7 @@ class TegariEmailRegister(APIView):
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)
-                dic['data'].update({"token" : token.key})
+                dic['data'].update({"token" : token.key, "user_type":"tegari"})
                 return Response(dic, status=status.HTTP_201_CREATED)
         else:
             dic = dict({'status': [] })
