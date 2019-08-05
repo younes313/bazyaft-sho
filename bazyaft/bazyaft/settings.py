@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
     'driver.apps.DriverConfig',
+    'adm.apps.AdmConfig',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -151,6 +152,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     STATIC_DIR ,
 ]
+
+MEDIA_URL = '/media/'
 
 
 EMAIL_USE_TLS = True
