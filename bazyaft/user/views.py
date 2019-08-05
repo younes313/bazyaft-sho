@@ -18,19 +18,6 @@ from .models import Order
 from .serializers import *
 
 
-from PIL import Image
-
-@permission_classes((AllowAny,))
-class image_view(APIView):
-
-    def get(self, request ,format=None):
-
-        try:
-            img  = Image.open("static/images/a.png")
-        except:
-            return Response({"sd":"Sdf"} , status=status.HTTP_400_BAD_REQUEST)
-        return redirect("/../static/images/a.png")
-
 
 @permission_classes((IsAuthenticated,))
 class GetOrder(APIView):
@@ -76,12 +63,12 @@ class GetTokenPhone(APIView):
                 except:
                     pass
             except:
-                return Response( {"status":False , "error" : "101"} , status = status.HTTP_200_OK)
+                return Response( {"status":False , "error" : "112"} , status = status.HTTP_200_OK)
         else:
-            return Response({"status":False , "error" : "103"}, status = status.HTTP_200_OK)
+            return Response({"status":False , "error" : "114"}, status = status.HTTP_200_OK)
 
 
-        return Response({"status":False , "error" : "102"}, status = status.HTTP_200_OK)
+        return Response({"status":False , "error" : "113"}, status = status.HTTP_200_OK)
 
 
 @permission_classes((IsAuthenticated,))
@@ -104,12 +91,12 @@ class GetTokenUsername(APIView):
         if serializer.is_valid():
             userr = authenticate(request=request, username=serializer.data['username'], password=serializer.data['password'])
             if not userr:
-                dic = { "status":False , "error" : "101"    }
+                dic = { "status":False , "error" : "115"    }
                 return Response(dic, status = status.HTTP_200_OK)
             token , _ = Token.objects.get_or_create(user=userr)
             return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
         else:
-            dic = { "status":False , "error" : "103"    }
+            dic = { "status":False , "error" : "114"    }
             return Response(dic, status = status.HTTP_200_OK)
 
 @permission_classes((AllowAny,))
@@ -122,15 +109,15 @@ class GetTokenEmail(APIView):
                 user = User.objects.get(email = serializer.data["email"])
                 userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
                 if not userr:
-                    dic = { "status":False , "error" : "101"    }
+                    dic = { "status":False , "error" : "116"    }
                     return Response(dic, status = status.HTTP_200_OK)
                 token , _ = Token.objects.get_or_create(user=user)
                 return Response({"status":True, "token":token.key}, status=status.HTTP_200_OK)
             except:
-                dic = { "status":False , "error" : "102"    }
+                dic = { "status":False , "error" : "117"    }
                 return Response(dic, status = status.HTTP_200_OK)
         else:
-            dic = { "status":False , "error" : "103"    }
+            dic = { "status":False , "error" : "118"    }
             return Response(dic, status = status.HTTP_200_OK)
 
 
