@@ -7,7 +7,7 @@ from .models import Khanevar , Edari , Tegari , Order
 
 class GetTokenPhonenumberSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=20)
-    
+
 
 class GetTokenUsernameSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=256)
@@ -157,15 +157,18 @@ class OrderSerializer(serializers.Serializer):
     parche = serializers.IntegerField(default=0)
     naan = serializers.IntegerField(default=0)
 
-    kaghaz_moghava = serializers.IntegerField(default=0)
-    felezat = serializers.IntegerField(default=0)
-    ahan_sangin = serializers.IntegerField(default=0)
-    ahan_sabok = serializers.IntegerField(default=0)
-    zayeat_elecronic = serializers.IntegerField(default=0)
+    # kaghaz_moghava = serializers.IntegerField(default=0)
+    # felezat = serializers.IntegerField(default=0)
+    # ahan_sangin = serializers.IntegerField(default=0)
+    # ahan_sabok = serializers.IntegerField(default=0)
+    # zayeat_elecronic = serializers.IntegerField(default=0)
 
-    score = serializers.IntegerField(default=0)
+    # coins = serializers.IntegerField(default=0)
+    # bag = serializers.IntegerField(default=0)
+    # money = serializers.IntegerField(default=0)
 
     pelak_melak = serializers.CharField(default="")
+    give_back_type =serializers.CharField(default="")
 
 
 

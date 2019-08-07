@@ -5,8 +5,20 @@ from django.utils import timezone
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User,related_name="user", on_delete=models.DO_NOTHING ,null=True)
-    driver = models.ForeignKey(User,related_name="driver", on_delete=models.DO_NOTHING , null=True)
+    values = {
+        "alminium" : 1000,
+        "pet": 2000,
+        "khoshk": 3000,
+        "daftar_ketab": 4000,
+        "shishe": 5000,
+        "parche": 6000,
+        "naan": 7000,
+
+    }
+
+
+    user = models.ForeignKey(User,related_name="user", on_delete=models.SET_NULL ,null=True)
+    driver = models.ForeignKey(User,related_name="driver", on_delete=models.SET_NULL , null=True)
     location_x = models.IntegerField(default=0)
     location_y = models.IntegerField(default=0)
 
@@ -24,14 +36,22 @@ class Order(models.Model):
     ahan_sabok = models.IntegerField(default=0)
     zayeat_elecronic = models.IntegerField(default=0)
 
-    score = models.IntegerField(default=0)
+    coins = models.IntegerField(default=0)
+    bag = models.IntegerField(default=0)
+    money = models.IntegerField(default=0)
 
     pelak_melak = models.TextField(blank=True)
+    give_back_type = models.CharField(max_length=20 , default="")
 
 
+    def calculate_coins(self):
+        # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
+        sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan
+        return sum//3 * 10
 
-
-
+    def calculate_money(self):
+        sum = self.alminium * self.values['alminium'] +self.pet * self.values['pet'] + self.khoshk * self.values['khoshk'] + self.daftar_ketab * self.values['daftar_ketab'] + self.shishe * self.values['shishe'] + self.parche * self.values['parche'] + self.naan * self.values['naan']
+        return sum
 
 
 

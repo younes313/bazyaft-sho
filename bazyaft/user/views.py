@@ -30,10 +30,40 @@ class GetOrder(APIView):
     def post(self, request, format=None):
         serializer = OrderSerializer(data = request.data)
         if serializer.is_valid():
-
+            dic = {"status":True}
             order = Order.objects.create(user=request.user, **serializer.validated_data)
+            if hasattr(request.user , "khanevar"):
+                coins = order.calculate_coins()
+                total_coins = request.user.khanevar.coins + coins
+                if order.give_back_type == "coin":
+                    order.coins = coins
+                    order.save()
+                    dic.update({"coins": order.coins})
+                elif order.give_back_type == "bag":
+                    order.bag = total_coins//10
+                    order.save()
+                    dic.update({"bag": order.bag})
+                else:
+                    return Response({"status":False , "error":"150"} , status=status.HTTP_200_OK)
 
-            dic = {'user_id': request.user.id , 'order_id' : order.id }
+            elif hasattr(request.user , "edari"):
+                if order.give_back_type == "money":
+                    order.money = order.calculate_money()
+                    order.save()
+                    dic.update({"money": order.money})
+                else:
+                    return Response({"status":False , "error":"150"} , status=status.HTTP_200_OK)
+
+            elif hasattr(request.user , "tegari"):
+                if order.give_back_type == "money":
+                    order.money = order.calculate_money()
+                    order.save()
+                    dic.update({"money": order.money})
+                else:
+                    return Response({"status":False , "error":"150"} , status=status.HTTP_200_OK)
+
+
+            dic.update( {'user_id': order.user.id , 'order_id' : order.id } )
             dic.update(serializer.data)
 
             return Response(dic , status=status.HTTP_200_OK)
@@ -200,6 +230,7 @@ class UserLogout(APIView):
 class GetTokenUsername(APIView):
 
     def post(self, request, format=None):
+        # print(timezone.localtime(timezone.now()))
         serializer = GetTokenUsernameSerializer(data = request.data)
         if serializer.is_valid():
             userr = authenticate(request=request, username=serializer.data['username'], password=serializer.data['password'])
