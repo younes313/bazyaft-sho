@@ -22,7 +22,7 @@ class GetAllOrders (APIView):
 
     def get(this, request, format=None):
 
-        serializer = OrderDriverSerializer( Order.objects.all() , many=True)
+        serializer = OrderDriverSerializer( Order.objects.filter(order_status="in queue") , many=True)
         # if serializer.is_valid():
         return Response(serializer.data , status=status.HTTP_200_OK)
 

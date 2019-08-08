@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
-
 from .models import Khanevar , Edari , Tegari , Order
 
 
@@ -156,6 +155,7 @@ class OrderSerializer(serializers.Serializer):
     shishe = serializers.IntegerField(default=0)
     parche = serializers.IntegerField(default=0)
     naan = serializers.IntegerField(default=0)
+    sayer = serializers.IntegerField(default=0)
 
     # kaghaz_moghava = serializers.IntegerField(default=0)
     # felezat = serializers.IntegerField(default=0)
@@ -169,6 +169,7 @@ class OrderSerializer(serializers.Serializer):
 
     pelak_melak = serializers.CharField(default="")
     give_back_type =serializers.CharField(default="")
+
 
 
 

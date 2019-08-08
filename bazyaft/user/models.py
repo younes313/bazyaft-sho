@@ -29,6 +29,7 @@ class Order(models.Model):
     shishe = models.IntegerField(default=0)
     parche = models.IntegerField(default=0)
     naan = models.IntegerField(default=0)
+    sayer = models.IntegerField(default=0)
 
     kaghaz_moghava = models.IntegerField(default=0)
     felezat = models.IntegerField(default=0)
@@ -42,11 +43,12 @@ class Order(models.Model):
 
     pelak_melak = models.TextField(blank=True)
     give_back_type = models.CharField(max_length=20 , default="")
+    order_status = models.CharField(max_length=20 , default="not confirmed")
 
 
     def calculate_coins(self):
         # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
-        sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan
+        sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
         return sum//3 * 10
 
     def calculate_money(self):

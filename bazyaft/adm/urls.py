@@ -7,11 +7,11 @@ app_name = 'adminn'
 
 urlpatterns = [
 
-    path('getfirstimage', views.getfirstimage.as_view() , name='getfirstimage'),
+    path('GetImage', views.GetImage.as_view() , name='GetImage'),
 
-    path('ImageCreate', views.ImageCreate.as_view() , name='ImageCreate'),
+    path('ItemCreate', views.ItemCreate.as_view() , name='ItemCreate'),
 
-    path('ImageList', views.ImageList.as_view() , name='ImageList'),
+    path('ItemsList', views.ItemsList.as_view() , name='ItemsList'),
 
 
 ]

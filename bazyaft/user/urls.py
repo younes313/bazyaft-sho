@@ -9,8 +9,9 @@ urlpatterns = [
     # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
 
-    path('GetTokenPhonenumber', views.GetTokenPhonenumber.as_view() , name='GetTokenPhonenumber'),
+    path('ConfirmOrCancel', views.ConfirmOrCancel.as_view() , name='ConfirmOrCancel'),
     path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
+    path('GetTokenPhonenumber', views.GetTokenPhonenumber.as_view() , name='GetTokenPhonenumber'),
     path('UserLogout', views.UserLogout.as_view() , name='UserLogout'),
     path('GetMyCoins', views.GetMyCoins.as_view() , name='GetMyCoins'),
     path('GetTokenPhone', views.GetTokenPhone.as_view() , name='GetTokenPhone'),

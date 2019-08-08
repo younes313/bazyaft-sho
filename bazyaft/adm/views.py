@@ -11,36 +11,41 @@ from rest_framework.decorators import api_view, permission_classes
 
 # Create your views here.
 
-from .serializers import ImageSerializer
-from .models import Image
+from .serializers import ItemsSerializer
+from .models import Items
 
 
 @permission_classes((AllowAny,))
-class getfirstimage(APIView):
+class GetImage(APIView):
 
     def get(self, request, format=None):
-        img = Image.objects.all()[0].image
-        return HttpResponse(img, content_type="image/png")
+        id = request.data['id']
+        try:
+            item = Items.objects.get(id=id)
+            return HttpResponse(item.image, content_type="image/png")
+        except:
+            return Response({"status":False}, status=status.HTTP_201_CREATED)
 
 
 
-class ImageList(ListAPIView):
 
-    serializer_class = ImageSerializer
+class ItemsList(ListAPIView):
+
+    serializer_class = ItemsSerializer
     permission_classes = (AllowAny,)
-    queryset = Image.objects.all()
+    queryset = Items.objects.all()
 
 
 
-class ImageCreate(CreateAPIView):
+class ItemCreate(CreateAPIView):
 
 
-    serializer_class = ImageSerializer
+    serializer_class = ItemsSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
 
-        serializer = ImageSerializer(data=request.data)
+        serializer = ItemsSerializer(data=request.data)
         if serializer.is_valid():
 
             # Save request image in the database

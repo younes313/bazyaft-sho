@@ -25,6 +25,28 @@ utc=pytz.UTC
 
 
 @permission_classes((IsAuthenticated,))
+class ConfirmOrCancel(APIView):
+
+    def post(self, request, format=None):
+        data = request.data
+        id = data['id']
+        try:
+            order = Order.objects.get(id=id)
+        except:
+            return Response({"status":False, "error":"160"}, status=status.HTTP_200_OK)
+        if order.order_status != "not confirmed":
+            return Response({"status":False, "error":"161"}, status=status.HTTP_200_OK)
+
+        if data['status'] == 'true':
+            order.order_status = "in queue"
+            order.save()
+        else:
+            order.delete()
+
+        return Response({"status":True,} ,status=status.HTTP_200_OK)
+
+
+@permission_classes((IsAuthenticated,))
 class GetOrder(APIView):
 
     def post(self, request, format=None):
@@ -63,7 +85,7 @@ class GetOrder(APIView):
                     return Response({"status":False , "error":"150"} , status=status.HTTP_200_OK)
 
 
-            dic.update( {'user_id': order.user.id , 'order_id' : order.id } )
+            dic.update( {'user_id': order.user.id , 'order_id' : order.id  } )
             dic.update(serializer.data)
 
             return Response(dic , status=status.HTTP_200_OK)
