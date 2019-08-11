@@ -49,7 +49,7 @@ class Order(models.Model):
     def calculate_coins(self):
         # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
         sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
-        return sum//3 * 10
+        return sum * 5
 
     def calculate_money(self):
         sum = self.alminium * self.values['alminium'] +self.pet * self.values['pet'] + self.khoshk * self.values['khoshk'] + self.daftar_ketab * self.values['daftar_ketab'] + self.shishe * self.values['shishe'] + self.parche * self.values['parche'] + self.naan * self.values['naan']

@@ -19,15 +19,50 @@ from .serializers import *
 
 from django.utils import timezone
 
-import pytz
+import requests
+# import pytz
+# utc=pytz.UTC
 
-utc=pytz.UTC
+# headers = {"Authorization" : "Token e57304bda3e1f1da0fbe1248920896b499db8f48" ,}
+# url = "http://Younes313.pythonanywhere.com/adm/ItemsList"
+# respone = requests.get(url, headers=headers)
+# return Response(respone.json() , status = respone.status_code)
+
+
+class GetMyInProgresOrder(APIView):
+    permission_classes = [ IsAuthenticated]
+
+    def get(self, request, format=None):
+        serializer = OrderDriverSerializer(Order.objects.filter(user=request.user) , many=True)
+        return Response(serializer.data , status=status.HTTP_200_OK)
+
+
+class CancelOrder(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        try:
+            id = request.data['id']
+            try:
+                order = Order.objects.get(id=id)
+                order.delete()
+                return Response( {"status":True, }  ,status=status.HTTP_200_OK)
+            except:
+                return Response( {"status":False, "error":"165" }  ,status=status.HTTP_200_OK)
+        except:
+            return Response( {"status":False, "error":"166" }  ,status=status.HTTP_200_OK)
+
+
+
+
 
 
 @permission_classes((IsAuthenticated,))
 class ConfirmOrCancel(APIView):
 
     def post(self, request, format=None):
+
+
         data = request.data
         id = data['id']
         try:

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView ,CreateAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny , IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import HttpResponse
@@ -32,7 +32,7 @@ class GetImage(APIView):
 class ItemsList(ListAPIView):
 
     serializer_class = ItemsSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     queryset = Items.objects.all()
 
 
