@@ -32,7 +32,7 @@ class GetImage(APIView):
 class ItemsList(ListAPIView):
 
     serializer_class = ItemsSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     queryset = Items.objects.all()
 
 

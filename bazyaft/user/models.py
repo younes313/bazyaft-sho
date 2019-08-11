@@ -19,8 +19,8 @@ class Order(models.Model):
 
     user = models.ForeignKey(User,related_name="user", on_delete=models.SET_NULL ,null=True)
     driver = models.ForeignKey(User,related_name="driver", on_delete=models.SET_NULL , null=True)
-    location_x = models.IntegerField(default=0)
-    location_y = models.IntegerField(default=0)
+    location_x = models.FloatField(default=0)
+    location_y = models.FloatField(default=0)
 
     alminium = models.IntegerField(default=0)
     pet = models.IntegerField(default=0)

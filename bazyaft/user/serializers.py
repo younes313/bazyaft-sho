@@ -145,8 +145,8 @@ class TegariEmailRegisterSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.Serializer):
     # user = serializers.HiddenField( default=serializers.CurrentUserDefault() )
     # user = UserKhanevarSerializer()
-    location_x = serializers.IntegerField(default=0)
-    location_y = serializers.IntegerField(default=0)
+    location_x = serializers.FloatField(default=0)
+    location_y = serializers.FloatField(default=0)
 
     alminium = serializers.IntegerField(default=0)
     pet = serializers.IntegerField(default=0)
