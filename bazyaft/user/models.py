@@ -83,6 +83,7 @@ class Edari(models.Model):
 
 
 
+
 class Tegari(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     type = models.CharField(max_length=50,blank=True)

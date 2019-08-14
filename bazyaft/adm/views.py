@@ -16,6 +16,13 @@ from .models import Items
 
 
 @permission_classes((AllowAny,))
+class HasUpdate(APIView):
+
+    def get(self, request, format=None):
+        return Response({"status":False}, status=status.HTTP_200_OK)
+
+
+@permission_classes((AllowAny,))
 class GetImage(APIView):
 
     def get(self, request, format=None):

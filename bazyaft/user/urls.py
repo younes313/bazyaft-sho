@@ -8,7 +8,7 @@ app_name = 'user'
 urlpatterns = [
     # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
-
+    path('EditUser', views.EditUser.as_view() , name='EditUser'),
     path('GetMyInProgresOrder', views.GetMyInProgresOrder.as_view() , name='GetMyInProgresOrder'),
     path('CancelOrder', views.CancelOrder.as_view() , name='CancelOrder'),
     path('ConfirmOrCancel', views.ConfirmOrCancel.as_view() , name='ConfirmOrCancel'),

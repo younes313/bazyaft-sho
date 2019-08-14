@@ -4,6 +4,21 @@ from django.contrib.auth.models import User
 from .models import Khanevar , Edari , Tegari , Order
 
 
+coin_for_invite = 1
+
+
+class UserEditSerializer(serializers.Serializer):
+    username = serializers.CharField(default="" , allow_blank=True)
+    password = serializers.CharField(default="" ,allow_blank=True)
+    email = serializers.CharField(default="" ,allow_blank=True)
+    first_name = serializers.CharField(default="" , allow_blank=True)
+    last_name = serializers.CharField(default="" , allow_blank=True)
+    phone_number = serializers.CharField(default="" , allow_blank=True)
+    location = serializers.CharField(default="" ,allow_blank=True)
+    type = serializers.CharField(default="", allow_blank=True)
+
+
+
 class GetTokenPhonenumberSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=20)
 
@@ -67,7 +82,7 @@ class UserEdariTegariSerializer(serializers.ModelSerializer):
 
 class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
     user = UserKhanevarSerializer()
-
+    moaref_code = serializers.CharField(default='', allow_blank=True)
 
     class Meta:
         model = Khanevar
@@ -83,16 +98,42 @@ class KhanevarEmailRegisterSerializer(serializers.ModelSerializer):
                 raise ValidationError("120")
         return value
 
+    def validate_moaref_code(self, value):
+        try:
+            if value != '':
+                User.objects.get(username=value)
+        except:
+            raise ValidationError('190')
+        return value
+
     def create(self, validated_data):
+
+        moaref = validated_data.pop('moaref_code')
+        if moaref != '':
+            usmo = User.objects.get(username=moaref)
+            print(5)
+            if hasattr(usmo, "khanevar"):
+                usmo.khanevar.coins += coin_for_invite
+                usmo.khanevar.save()
+            elif hasattr(usmo, "edari"):
+                usmo.edari.coins += coin_for_invite
+                usmo.edari.save()
+                print(6)
+            elif hasattr(usmo, "tegari"):
+                usmo.tegari.coins += coin_for_invite
+                usmo.tegari.save()
+
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
         khanevar = Khanevar.objects.create(user=user,**validated_data)
+
         return khanevar
 
 
 
 class EdariEmailRegisterSerializer(serializers.ModelSerializer):
     user = UserEdariTegariSerializer()
+    moaref_code = serializers.CharField(default='', allow_blank=True)
     class Meta:
         model = Edari
         fields = '__all__'
@@ -107,8 +148,32 @@ class EdariEmailRegisterSerializer(serializers.ModelSerializer):
                 raise ValidationError("120")
         return value
 
+    def validate_moaref_code(self, value):
+        try:
+            if value != '':
+                User.objects.get(username=value)
+        except:
+            raise ValidationError('190')
+        return value
+
 
     def create(self, validated_data):
+        moaref = validated_data.pop('moaref_code')
+        if moaref != '':
+            usmo = User.objects.get(username=moaref)
+            print(5)
+            if hasattr(usmo, "khanevar"):
+                usmo.khanevar.coins += coin_for_invite
+                usmo.khanevar.save()
+            elif hasattr(usmo, "edari"):
+                usmo.edari.coins += coin_for_invite
+                usmo.edari.save()
+                print(6)
+            elif hasattr(usmo, "tegari"):
+                usmo.tegari.coins += coin_for_invite
+                usmo.tegari.save()
+
+
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
 
@@ -118,6 +183,7 @@ class EdariEmailRegisterSerializer(serializers.ModelSerializer):
 
 class TegariEmailRegisterSerializer(serializers.ModelSerializer):
     user = UserEdariTegariSerializer()
+    moaref_code = serializers.CharField(default='', allow_blank=True)
     class Meta:
         model = Tegari
         fields = '__all__'
@@ -133,8 +199,31 @@ class TegariEmailRegisterSerializer(serializers.ModelSerializer):
                 raise ValidationError("120")
         return value
 
+    def validate_moaref_code(self, value):
+        try:
+            if value != '':
+                User.objects.get(username=value)
+        except:
+            raise ValidationError('190')
+        return value
 
     def create(self, validated_data):
+        moaref = validated_data.pop('moaref_code')
+        if moaref != '':
+            usmo = User.objects.get(username=moaref)
+            print(5)
+            if hasattr(usmo, "khanevar"):
+                usmo.khanevar.coins += coin_for_invite
+                usmo.khanevar.save()
+            elif hasattr(usmo, "edari"):
+                usmo.edari.coins += coin_for_invite
+                usmo.edari.save()
+                print(6)
+            elif hasattr(usmo, "tegari"):
+                usmo.tegari.coins += coin_for_invite
+                usmo.tegari.save()
+
+
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
 
@@ -171,10 +260,17 @@ class OrderSerializer(serializers.Serializer):
     give_back_type =serializers.CharField(default="")
 
 
-
-
 class OrderDriverSerializer(serializers.ModelSerializer):
-
+    phone_number = serializers.SerializerMethodField()
     class Meta:
         model = Order
         fields = "__all__"
+
+
+    def get_phone_number(self, obj):
+        if hasattr(obj.user , 'khanevar'):
+            return obj.user.khanevar.phone_number
+        if hasattr(obj.user , 'edari'):
+            return obj.user.edari.phone_number
+        if hasattr(obj.user , 'tegari'):
+            return obj.user.tegari.phone_number

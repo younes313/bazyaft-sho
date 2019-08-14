@@ -19,14 +19,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from driver import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('' , views.index , name = 'index'),
+    path('special/' , views.special , name = 'special'),
+    path('logout/' , views.user_logout , name = 'logout'),
     path('user/', include('user.urls') ),
     path('driver/' , include('driver.urls')) ,
     path('adm/', include("adm.urls")),
 
 ]
-#
-# urlpatterns = patterns('',
-#     # ... the rest of your URLconf goes here ...
-# ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns +=  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

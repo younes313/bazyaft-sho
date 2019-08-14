@@ -29,13 +29,95 @@ import requests
 # return Response(respone.json() , status = respone.status_code)
 
 
+@permission_classes((AllowAny,))
+class EditUser(APIView):
+
+    def post(self, request, format=None):
+        serializer = UserEditSerializer(data=request.data)
+        dic = dict()
+        if serializer.is_valid():
+            user = request.user
+            data = serializer.data
+            if data['username'] != '' and user.username != data['username']:
+                if not User.objects.filter(username =data['username']).exists():
+                    user.username = data['username']
+                else:
+                    return Response({'status':False, 'error':'110'} ,status=status.HTTP_200_OK)
+            if data['password'] != '' :
+                user.set_password(data['password'])
+            if data['email'] != '' and user.email != data['email']:
+                if not User.objects.filter(email =data['email']).exists():
+                    user.email = data['email']
+                else:
+                    return Response({'status':False, 'error':'102'} ,status=status.HTTP_200_OK)
+            if data['first_name'] != '':
+                user.first_name = data['first_name']
+            if data['last_name'] != '':
+                user.last_name = data['last_name']
+
+            user.save()
+
+            kind = ''
+            if hasattr(user , "khanevar"):
+                kind = 'k'
+            elif hasattr(user , "edari"):
+                kind = 'e'
+            elif hasattr(user , "tegari"):
+                kind = 't'
+            print (kind)
+            if data['phone_number'] != '' :
+                value = data['phone_number']
+                if Khanevar.objects.filter(phone_number=value).exists() and not (kind == 'k' and user.khanevar.phone_number == value):
+                    return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
+                if Edari.objects.filter(phone_number=value).exists() and not (kind == 'e' and user.edari.phone_number != value):
+                    return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
+                if Tegari.objects.filter(phone_number=value).exists() and not (kind == 't' and user.tegari.phone_number != value):
+                    return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
+                if kind == 'k':
+                    user.khanevar.phone_number = value
+                    user.khanevar.save()
+                elif kind == 'e':
+                    user.edari.phone_number = value
+                    user.edari.save()
+                elif kind == 't':
+                    user.tegari.phone_number = value
+                    user.tegari.save()
+
+            if data['location'] != '':
+                value = data['location']
+                if kind == 'k':
+                    user.khanevar.location = value
+                    user.khanevar.save()
+                elif kind == 'e':
+                    user.edari.location = value
+                    user.edari.save()
+                elif kind == 't':
+                    user.tegari.location = value
+                    user.tegari.save()
+
+            if data['type'] != '':
+                value = data['type']
+                if kind == 'e':
+                    user.edari.type = value
+                    user.edari.save()
+                elif kind == 't':
+                    user.tegari.type = value
+                    user.tegari.save()
+
+            return Response({'status':True, } ,status=status.HTTP_200_OK)
+
+        else:
+            return Response(serializer.errors)
+
+
+
+
 class GetMyInProgresOrder(APIView):
     permission_classes = [ IsAuthenticated]
 
     def get(self, request, format=None):
         serializer = OrderDriverSerializer(Order.objects.filter(user=request.user) , many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
-
 
 class CancelOrder(APIView):
     permission_classes = [IsAuthenticated]
@@ -51,11 +133,6 @@ class CancelOrder(APIView):
                 return Response( {"status":False, "error":"165" }  ,status=status.HTTP_200_OK)
         except:
             return Response( {"status":False, "error":"166" }  ,status=status.HTTP_200_OK)
-
-
-
-
-
 
 @permission_classes((IsAuthenticated,))
 class ConfirmOrCancel(APIView):
@@ -128,7 +205,6 @@ class GetOrder(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @permission_classes((AllowAny,))
 class GetTokenPhonenumber(APIView):
 
@@ -137,12 +213,6 @@ class GetTokenPhonenumber(APIView):
         if serializer.is_valid():
             try:
                 user = Khanevar.objects.get(phone_number = serializer.data["phone_number"]).user
-                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                # if not userr:
-                #     dic = { "status":False , "error" : "121"    }
-                #     return Response(dic, status = status.HTTP_200_OK)
-                # token , _ = Token.objects.get_or_create(user=user)
-                # user_type = "khanevar"
 
                 if user.khanevar.code_time.year == timezone.now().year and user.khanevar.code_time.month == timezone.now().month and user.khanevar.code_time.day == timezone.now().day and user.khanevar.code_time.hour == timezone.now().hour:
                     if user.khanevar.code_time.minute == timezone.now().minute:
@@ -162,14 +232,7 @@ class GetTokenPhonenumber(APIView):
                 pass
             try:
                 user = Edari.objects.get(phone_number = serializer.data["phone_number"]).user
-                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                # if not userr:
-                #     dic = { "status":False , "error" : "121"    }
-                #     return Response(dic, status = status.HTTP_200_OK)
-                # token , _ = Token.objects.get_or_create(user=user)
-                # user_type = "edari"
 
-                # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
                 if user.edari.code_time.year == timezone.now().year and user.edari.code_time.month == timezone.now().month and user.edari.code_time.day == timezone.now().day and user.edari.code_time.hour == timezone.now().hour:
                     if user.edari.code_time.minute == timezone.now().minute:
                         remain = 60 -  (timezone.now().second - user.edari.code_time.second)
@@ -187,14 +250,7 @@ class GetTokenPhonenumber(APIView):
                 pass
             try:
                 user = Tegari.objects.get(phone_number = serializer.data["phone_number"]).user
-                # userr = authenticate(request=request, username=user.username, password=serializer.data['password'])
-                # if not userr:
-                #     dic = { "status":False , "error" : "121"    }
-                #     return Response(dic, status = status.HTTP_200_OK)
-                # token , _ = Token.objects.get_or_create(user=user)
-                # user_type = "tegari"
-                #
-                # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+
                 if user.tegari.code_time.year == timezone.now().year and user.tegari.code_time.month == timezone.now().month and user.tegari.code_time.day == timezone.now().day and user.tegari.code_time.hour == timezone.now().hour:
                     if user.tegari.code_time.minute == timezone.now().minute:
                         remain = 60 -  (timezone.now().second - user.tegari.code_time.second)
@@ -218,8 +274,6 @@ class GetTokenPhonenumber(APIView):
         else:
             dic = { "status":False , "error" : "132"    }
             return Response(dic, status = status.HTTP_200_OK)
-
-
 
 
 @permission_classes((AllowAny,))
@@ -282,7 +336,6 @@ class UserLogout(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @permission_classes((AllowAny,))
 class GetTokenUsername(APIView):
 
@@ -342,6 +395,7 @@ class KhanevarEmailRegister(APIView):
         serializer = KhanevarEmailRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
             dic = {'data' :serializer.data }
             dic.update({'status': True})
             dic['data'].update({'status':'101'})
@@ -391,6 +445,11 @@ class KhanevarEmailRegister(APIView):
                 dic['status'].extend(serializer.errors['phone_number'])
             except:
                 pass
+            try:
+                dic['status'].extend(serializer.errors['moaref_code'])
+            except:
+                pass
+
             dic2 = {'status':False , 'data': dic}
             # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
             return Response(dic2 , status=status.HTTP_201_CREATED)
