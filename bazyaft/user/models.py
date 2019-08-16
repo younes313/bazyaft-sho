@@ -31,11 +31,11 @@ class Order(models.Model):
     naan = models.IntegerField(default=0)
     sayer = models.IntegerField(default=0)
 
-    kaghaz_moghava = models.IntegerField(default=0)
-    felezat = models.IntegerField(default=0)
-    ahan_sangin = models.IntegerField(default=0)
-    ahan_sabok = models.IntegerField(default=0)
-    zayeat_elecronic = models.IntegerField(default=0)
+    # kaghaz_moghava = models.IntegerField(default=0)
+    # felezat = models.IntegerField(default=0)
+    # ahan_sangin = models.IntegerField(default=0)
+    # ahan_sabok = models.IntegerField(default=0)
+    # zayeat_elecronic = models.IntegerField(default=0)
 
     coins = models.IntegerField(default=0)
     bag = models.IntegerField(default=0)
@@ -45,15 +45,25 @@ class Order(models.Model):
     give_back_type = models.CharField(max_length=20 , default="")
     order_status = models.CharField(max_length=20 , default="not confirmed")
 
+    def calculate_sum(self):
+        # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
+        sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
+        return sum
 
     def calculate_coins(self):
         # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
-        sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
-        return sum * 5
+        # sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
+        return self.calculate_sum() * 5
 
     def calculate_money(self):
         sum = self.alminium * self.values['alminium'] +self.pet * self.values['pet'] + self.khoshk * self.values['khoshk'] + self.daftar_ketab * self.values['daftar_ketab'] + self.shishe * self.values['shishe'] + self.parche * self.values['parche'] + self.naan * self.values['naan']
         return sum
+
+
+
+class OrderHistory(Order):
+    data_done = models.DateTimeField(auto_now_add = True)
+
 
 
 

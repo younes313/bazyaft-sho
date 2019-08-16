@@ -14,10 +14,19 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 ######################
-
-from user.models import Order
+from .serializers import *
+from user.models import Order , OrderHistory
 from user.serializers import OrderSerializer
 from user.serializers import OrderDriverSerializer
+
+
+@permission_classes((permissions.IsAuthenticated,))
+class History(APIView):
+
+    def get(self, request, format=None):
+        serializer = HistorySerializer(OrderHistory.objects.filter(driver=request.user) , many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 
@@ -106,6 +115,86 @@ def user_login(request):
 
 
 ###############################3
+
+class ConfirmOrEditOrder(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = ConfirmOrEditOrderSerializer(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                data = serializer.data
+                order = Order.objects.filter(id = data['order_id'] )
+                if serializer.data['status_driver'] == 'edit':
+                    data.pop('status_driver' , None)
+                    data.pop('order_id', None)
+                    order.update(**data)
+                    # order.save()
+                order = order[0]
+                dic = {"status":True}
+                # dic.update(serializer.data)
+                if hasattr(order.user , "khanevar"):
+                    coins = order.calculate_coins()
+                    total_coins = order.user.khanevar.coins + coins
+                    order.coins = coins
+                    if order.give_back_type == "coin":
+                        order.save()
+                        order.user.khanevar.coins += coins
+                        order.user.khanevar.save()
+                        dic.update({"coins": order.coins})
+                    elif order.give_back_type == "bag":
+                        order.bag = total_coins // 10
+                        order.save()
+                        order.user.khanevar.coins = total_coins - order.bag * 10
+                        order.user.khanevar.save()
+                        dic.update({"coins": order.coins})
+                        dic.update({"bag": order.bag})
+
+                elif hasattr(order.user , "edari"):
+                    print(1)
+                    if order.give_back_type == "money":
+                        print(2)
+                        order.money = order.calculate_money()
+                        order.save()
+                        dic.update({"money": order.money})
+
+                elif hasattr(order.user , "tegari"):
+                    print(1)
+                    if order.give_back_type == "money":
+                        print(2)
+                        order.money = order.calculate_money()
+                        order.save()
+                        dic.update({"money": order.money})
+
+                order.order_status = "done"
+                order.save()
+
+                order.driver.drivermodel.coins += order.calculate_sum()
+                order.driver.drivermodel.save()
+
+                ser = OrderHistorySerializer(order)
+                ser = ser.data
+                usr = User.objects.get(id=ser['user'])
+                ser.pop("user" , None)
+                drv = User.objects.get(id = ser['driver'])
+                ser.pop("driver" , None)
+                ser.pop("id" , None)
+
+                OrderHistory.objects.create(user=usr, driver=drv, **ser)
+
+                order.delete()
+
+                return Response(dic, status=status.HTTP_200_OK)
+
+            except:
+                return Response({"status":False, "error":"165"}, status=status.HTTP_200_OK) # incorrect order_id
+        else:
+            return Response({"status":False, "error":"169"}, status=status.HTTP_200_OK) # order_id is required
+
+
+
+
 
 
 

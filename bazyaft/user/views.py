@@ -14,8 +14,9 @@ from django.shortcuts import redirect
 from random import randint
 from datetime import datetime ,timedelta
 
-from .models import Order
+from .models import Order , OrderHistory
 from .serializers import *
+from driver.serializers import HistorySerializer
 
 from django.utils import timezone
 
@@ -27,6 +28,16 @@ import requests
 # url = "http://Younes313.pythonanywhere.com/adm/ItemsList"
 # respone = requests.get(url, headers=headers)
 # return Response(respone.json() , status = respone.status_code)
+
+
+@permission_classes((IsAuthenticated,))
+class History(APIView):
+
+    def get(self, request, format=None):
+        serializer = HistorySerializer(OrderHistory.objects.filter(user=request.user) , many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 
 @permission_classes((AllowAny,))
