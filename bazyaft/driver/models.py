@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 # Create your models here.
 
 
@@ -17,3 +19,6 @@ class DriverModel(models.Model):
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
 
     coins = models.PositiveIntegerField(default=0)
+
+    code = models.IntegerField(default=0)
+    code_time = models.DateTimeField(default=timezone.now )

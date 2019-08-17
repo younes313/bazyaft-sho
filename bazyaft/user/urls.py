@@ -8,6 +8,8 @@ app_name = 'user'
 urlpatterns = [
     # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
+
+    path('CodeStatus', views.CodeStatus.as_view() , name='CodeStatus'),
     path('History', views.History.as_view() , name='History'),
     path('EditUser', views.EditUser.as_view() , name='EditUser'),
     path('GetMyInProgresOrder', views.GetMyInProgresOrder.as_view() , name='GetMyInProgresOrder'),

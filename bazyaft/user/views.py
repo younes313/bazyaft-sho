@@ -20,14 +20,27 @@ from driver.serializers import HistorySerializer
 
 from django.utils import timezone
 
+
+
 import requests
+import json
 # import pytz
 # utc=pytz.UTC
 
-# headers = {"Authorization" : "Token e57304bda3e1f1da0fbe1248920896b499db8f48" ,}
-# url = "http://Younes313.pythonanywhere.com/adm/ItemsList"
-# respone = requests.get(url, headers=headers)
-# return Response(respone.json() , status = respone.status_code)
+# @permission_classes((AllowAny,))
+def send_sms(phone_number, code):
+    username = "09223820853"
+    # password = "6872"
+    #
+    # bodyid = 7932
+    # url = "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber"
+    # headers = {"Content-Type" : "application/x-www-form-urlencoded" , "cache-control": "no-cache"}
+    # # data={'UserName':username, 'PassWord':password, 'text':text, 'to':phone_number, 'bodyId':bodyid}
+    # data = "username=09223820853&password=6872&to={}&text={}%3B{}&bodyId=7932".format(phone_number, phone_number, code  )
+    # respone = requests.post(url, headers = headers,  data= data )
+    #
+    # print(respone.json())
+    # # return Response(respone.json() , status = respone.status_code)
 
 
 @permission_classes((IsAuthenticated,))
@@ -38,9 +51,32 @@ class History(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@permission_classes((IsAuthenticated,))
+class CodeStatus(APIView):
+
+    def post(self, request, format=None):
+        try:
+            phone_number = request.data['phone_number']
+            confirm = request.data["confirm"]
+        except:
+            dic = { "status":False , "error" : "170"  }
+            return Response(dic, status = status.HTTP_200_OK) #incorrect input
+        if confirm == 'true':
+            if hasattr( request.user , 'khanevar'):
+                request.user.khanevar.phone_number = phone_number
+                request.user.khanevar.save()
+            elif hasattr( request.user , 'edari'):
+                request.user.edari.phone_number = phone_number
+                request.user.edari.save()
+            elif hasattr( request.user , 'tegari'):
+                request.user.tegari.phone_number = phone_number
+                request.user.tegari.save()
+
+        return Response({"status":True}, status=status.HTTP_200_OK)
 
 
-@permission_classes((AllowAny,))
+
+@permission_classes((IsAuthenticated,))
 class EditUser(APIView):
 
     def post(self, request, format=None):
@@ -75,24 +111,44 @@ class EditUser(APIView):
                 kind = 'e'
             elif hasattr(user , "tegari"):
                 kind = 't'
-            print (kind)
+
+
+            is_number_changed = False
+            code = randint(100000 , 999999)
+
             if data['phone_number'] != '' :
                 value = data['phone_number']
                 if Khanevar.objects.filter(phone_number=value).exists() and not (kind == 'k' and user.khanevar.phone_number == value):
                     return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
-                if Edari.objects.filter(phone_number=value).exists() and not (kind == 'e' and user.edari.phone_number != value):
+                if Edari.objects.filter(phone_number=value).exists() and not (kind == 'e' and user.edari.phone_number == value):
                     return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
-                if Tegari.objects.filter(phone_number=value).exists() and not (kind == 't' and user.tegari.phone_number != value):
+                if Tegari.objects.filter(phone_number=value).exists() and not (kind == 't' and user.tegari.phone_number == value):
                     return Response({'status':False, 'error':'120'} ,status=status.HTTP_200_OK)
                 if kind == 'k':
-                    user.khanevar.phone_number = value
-                    user.khanevar.save()
+                    if user.khanevar.phone_number != value:
+                        is_number_changed = True
+                        user.khanevar.code = code
+                        user.khanevar.code_time = timezone.now()
+                        # user.khanevar.phone_number = value
+                        send_sms(user.khanevar.phone_number, code)
+                        user.khanevar.save()
                 elif kind == 'e':
-                    user.edari.phone_number = value
-                    user.edari.save()
+                    if user.edari.phone_number != value:
+                        is_number_changed = True
+                        user.edari.code = code
+                        user.edari.code_time = timezone.now()
+                        # user.edari.phone_number = value
+                        send_sms(user.edari.phone_number, code)
+                        user.edari.save()
                 elif kind == 't':
-                    user.tegari.phone_number = value
-                    user.tegari.save()
+                    if user.tegari.phone_number != value:
+                        is_number_changed = True
+                        user.tegari.code = code
+                        user.tegari.code_time = timezone.now()
+                        # user.tegari.phone_number = value
+                        send_sms(user.tegari.phone_number, code)
+                        user.tegari.save()
+
 
             if data['location'] != '':
                 value = data['location']
@@ -115,7 +171,10 @@ class EditUser(APIView):
                     user.tegari.type = value
                     user.tegari.save()
 
-            return Response({'status':True, } ,status=status.HTTP_200_OK)
+            if is_number_changed:
+                return Response({'status':True, "is_number_changed":is_number_changed, "code" : code } ,status=status.HTTP_200_OK)
+
+            return Response({'status':True, "is_number_changed":is_number_changed} ,status=status.HTTP_200_OK)
 
         else:
             return Response(serializer.errors)
@@ -237,6 +296,9 @@ class GetTokenPhonenumber(APIView):
                 user.khanevar.code = code
                 user.khanevar.code_time = timezone.now()
                 user.khanevar.save()
+
+                send_sms(user.khanevar.phone_number, code)
+
                 return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
                 # return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
             except:
@@ -256,6 +318,9 @@ class GetTokenPhonenumber(APIView):
                 user.edari.code = code
                 user.edari.code_time = timezone.now()
                 user.edari.save()
+
+                send_sms(user.edari.phone_number, code)
+
                 return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
             except:
                 pass
@@ -274,6 +339,9 @@ class GetTokenPhonenumber(APIView):
                 user.tegari.code = code
                 user.tegari.code_time = timezone.now()
                 user.tegari.save()
+
+                send_sms(user.tegari.phone_number, code)
+
                 return Response({"status":True, 'username':user.username, 'code':code}, status=status.HTTP_200_OK)
             except:
                 pass
@@ -420,6 +488,9 @@ class KhanevarEmailRegister(APIView):
                 user.khanevar.code = code
                 user.khanevar.code_time = timezone.now()
                 user.khanevar.save()
+
+                send_sms(user.khanevar.phone_number, code)
+
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)
@@ -495,6 +566,9 @@ class EdariEmailRegister(APIView):
                 user.edari.code = code
                 user.edari.code_time = timezone.now()
                 user.edari.save()
+
+                send_sms(user.edari.phone_number, code)
+
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)
@@ -556,6 +630,9 @@ class TegariEmailRegister(APIView):
                 user.tegari.code = code
                 user.tegari.code_time = timezone.now()
                 user.tegari.save()
+
+                send_sms(user.tegari.phone_number, code)
+
                 return Response(dic, status=status.HTTP_201_CREATED)
             else:
                 token, created = Token.objects.get_or_create(user=user)

@@ -13,11 +13,15 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.utils import timezone
+from random import randint
 ######################
 from .serializers import *
 from user.models import Order , OrderHistory
 from user.serializers import OrderSerializer
 from user.serializers import OrderDriverSerializer
+from user.views import send_sms
+from .models import DriverModel
 
 
 @permission_classes((permissions.IsAuthenticated,))
@@ -28,10 +32,43 @@ class History(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@permission_classes((permissions.AllowAny,))
+class GetToken(APIView):
+    def LessThanOneMinute(self, now, generated_time):
+        if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
+            if generated_time.minute == now.minute:
+                return True
+            elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
+                return True
+        return False
+
+    def post(self, request, format=None):
+        try:
+            phone_number = request.data['phone_number']
+            code = request.data['code']
+        except:
+            dic = { "status":False , "error" : "170"  }
+            return Response(dic, status = status.HTTP_200_OK) #incorrect input
+
+        try:
+            driver = DriverModel.objects.get(phone_number=phone_number )
+            if self.LessThanOneMinute(timezone.now() , driver.code_time ):
+
+                if driver.code == int(code):
+                    token , _ = Token.objects.get_or_create(user=driver.user)
+                    return Response({"status":True, "token":token.key})
+            else:
+                return Response( {"status":False , "error" : "140"} , status = status.HTTP_200_OK)  #code is expired
+        except:
+            pass
+        return Response ( {"status":False , "error" : "700"} , status = status.HTTP_200_OK) # wrong number or code
+
+
+
 
 
 @permission_classes((permissions.AllowAny,))
-class GetToken(APIView):
+class GetCode(APIView):
 
     def post(self, request, format=None):
         try:
@@ -45,8 +82,16 @@ class GetToken(APIView):
         if not (user and hasattr(user, 'drivermodel') ):
             dic = { "status":False , "error" : "171"    }   # incorrect phone_number or national_code
             return Response(dic, status = status.HTTP_200_OK)
-        token , _ = Token.objects.get_or_create(user=user)
-        return Response({"status":True, "token":token.key, }, status=status.HTTP_200_OK)
+
+        #generate and send code
+        code = randint(100000 , 999999)
+        user.drivermodel.code = code
+        user.drivermodel.code_time = timezone.now()
+        send_sms(user.drivermodel.phone_number, code)
+        user.drivermodel.save()
+
+        # token , _ = Token.objects.get_or_create(user=user)
+        return Response({"status":True, "code":code, }, status=status.HTTP_200_OK)
 
 
 
@@ -193,19 +238,12 @@ class ConfirmOrEditOrder(APIView):
             return Response({"status":False, "error":"169"}, status=status.HTTP_200_OK) # order_id is required
 
 
-
-
-
-
-
 class GetMyAcceptedOrder(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         serializer = OrderDriverSerializer(Order.objects.filter(driver=request.user) , many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
-
-
 
 
 class AcceptOrder(APIView):
@@ -249,7 +287,6 @@ class CancelOrder(APIView):
                 return Response( {"status":False, "error":"165" }  ,status=status.HTTP_200_OK)
         except:
             return Response( {"status":False, "error":"166" }  ,status=status.HTTP_200_OK)
-
 
 
 class GetAllOrders (APIView):
