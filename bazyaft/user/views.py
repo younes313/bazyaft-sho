@@ -43,6 +43,16 @@ def send_sms(phone_number, code):
     # # return Response(respone.json() , status = respone.status_code)
 
 
+
+@permission_classes((IsAuthenticated,))
+class GetUserInfo(APIView):
+
+    def get(self, request, format=None):
+        serializer = GetUserInfoSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 @permission_classes((IsAuthenticated,))
 class History(APIView):
 

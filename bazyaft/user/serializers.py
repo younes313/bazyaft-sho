@@ -1,10 +1,51 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import Khanevar , Edari , Tegari , Order
+from .models import Khanevar , Edari , Tegari , Order, OrderHistory
 
 
 coin_for_invite = 1
+
+
+class GetUserInfoSerializer(serializers.Serializer):
+
+    class Meta:
+        model = User
+
+
+
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+
+        representation['username'] = instance.username
+
+        if hasattr(instance , 'khanevar'):
+            representation['phone_number'] = instance.khanevar.phone_number
+            representation['coins'] = instance.khanevar.coins
+            representation['order_history'] = len(OrderHistory.objects.filter(user = instance))
+            representation['order_in_progress'] = len(Order.objects.filter(user = instance))
+            representation['location'] = instance.khanevar.location
+
+        if hasattr(instance , 'edari'):
+            representation['phone_number'] = instance.edari.phone_number
+            representation['coins'] = instance.edari.coins
+            representation['order_history'] = len(OrderHistory.objects.filter(user = instance))
+            representation['order_in_progress'] = len(Order.objects.filter(user = instance))
+            representation['location'] = instance.edari.location
+            representation['type'] = instance.edari.type
+
+        if hasattr(instance , 'tegari'):
+            representation['phone_number'] = instance.tegari.phone_number
+            representation['coins'] = instance.tegari.coins
+            representation['order_history'] = len(OrderHistory.objects.filter(user = instance))
+            representation['order_in_progress'] = len(Order.objects.filter(user = instance))
+            representation['location'] = instance.tegari.location
+            representation['type'] = instance.tegari.type
+
+        
+        return representation
+
 
 
 class UserEditSerializer(serializers.Serializer):
@@ -274,3 +315,15 @@ class OrderDriverSerializer(serializers.ModelSerializer):
             return obj.user.edari.phone_number
         if hasattr(obj.user , 'tegari'):
             return obj.user.tegari.phone_number
+
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+
+        if instance.driver != None :
+            drv = instance.driver.drivermodel
+            data = {"two_first":drv.car_palette_two_first, "letter":drv.car_palette_letter, "three_last": drv.car_palette_three_last, "city_code":drv.car_palette_city_code  }
+            representation['pelak'] = data
+        else:
+            representation['pelak'] = ""
+        return representation

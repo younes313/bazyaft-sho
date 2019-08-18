@@ -270,7 +270,7 @@ class CancelOrder(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
-        print (request.user.username)
+        # print (request.user.user)
         # try:
         id = request.data['id']
         # try:
