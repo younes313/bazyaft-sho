@@ -451,13 +451,17 @@ class GetTokenEmail(APIView):
                     dic = { "status":False , "error" : "116"    }
                     return Response(dic, status = status.HTTP_200_OK)
                 token , _ = Token.objects.get_or_create(user=user)
+                phone_number = ''
                 if hasattr(userr , "khanevar"):
                     user_type = "khanevar"
+                    phone_number = user.khanevar.phone_number
                 elif hasattr(userr , "edari"):
                     user_type = "edari"
+                    phone_number = user.edari.phone_number
                 elif hasattr(userr , "tegari"):
                     user_type = "tegari"
-                return Response({"status":True, "token":token.key, "user_type":user_type}, status=status.HTTP_200_OK)
+                    phone_number = user.tegari.phone_number
+                return Response({"status":True, "token":token.key, "user_type":user_type, "phone_number":phone_number}, status=status.HTTP_200_OK)
             except:
                 dic = { "status":False , "error" : "117"    }
                 return Response(dic, status = status.HTTP_200_OK)

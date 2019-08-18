@@ -270,23 +270,24 @@ class CancelOrder(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
-            id = request.data['id']
-            try:
-                order = Order.objects.get(id=id)
-                if request.user.drivermodel.coins > 5 :
-                    request.user.drivermodel.coins -= 5
-                else:
-                    request.user.drivermodel.coins = 0
-                request.user.drivermodel.save()
-                order.driver = None
-                order.order_status = "in queue"
-                order.save()
-                return Response( {"status":True, }  ,status=status.HTTP_200_OK)
-            except:
-                return Response( {"status":False, "error":"165" }  ,status=status.HTTP_200_OK)
-        except:
-            return Response( {"status":False, "error":"166" }  ,status=status.HTTP_200_OK)
+        print (request.user.username)
+        # try:
+        id = request.data['id']
+        # try:
+        order = Order.objects.get(id=id)
+        if request.user.drivermodel.coins > 5 :
+            request.user.drivermodel.coins -= 5
+        else:
+            request.user.drivermodel.coins = 0
+        request.user.drivermodel.save()
+        order.driver = None
+        order.order_status = "in queue"
+        order.save()
+        return Response( {"status":True, }  ,status=status.HTTP_200_OK)
+        # except:
+        return Response( {"status":False, "error":"165" }  ,status=status.HTTP_200_OK)
+        # except:
+        return Response( {"status":False, "error":"166" }  ,status=status.HTTP_200_OK)
 
 
 class GetAllOrders (APIView):
