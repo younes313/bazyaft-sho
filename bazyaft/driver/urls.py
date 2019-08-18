@@ -8,6 +8,8 @@ app_name = 'driver'
 urlpatterns = [
     # path('GetOrder', views.GetOrder.as_view() , name='GetOrder'),
 
+
+    path('GetDriverInfo', views.GetDriverInfo.as_view() , name='GetDriverInfo'),
     path('GetToken', views.GetToken.as_view() , name='GetToken'),
     path('GetCode', views.GetCode.as_view() , name='GetCode'),
     path('History', views.History.as_view() , name='History'),

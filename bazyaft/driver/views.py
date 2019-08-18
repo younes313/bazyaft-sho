@@ -24,6 +24,15 @@ from user.views import send_sms
 from .models import DriverModel
 
 
+
+@permission_classes((permissions.IsAuthenticated,))
+class GetDriverInfo(APIView):
+
+    def get(self, request, format=None):
+        serializer = GetDriverInfoSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @permission_classes((permissions.IsAuthenticated,))
 class History(APIView):
 

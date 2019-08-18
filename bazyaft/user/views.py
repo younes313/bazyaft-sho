@@ -64,25 +64,58 @@ class History(APIView):
 @permission_classes((IsAuthenticated,))
 class CodeStatus(APIView):
 
+    def LessThanOneMinute(self, now, generated_time):
+        if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
+            if generated_time.minute == now.minute:
+                return True
+            elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
+                return True
+        return False
+
     def post(self, request, format=None):
         try:
             phone_number = request.data['phone_number']
-            confirm = request.data["confirm"]
+            code = request.data["code"]
         except:
             dic = { "status":False , "error" : "170"  }
             return Response(dic, status = status.HTTP_200_OK) #incorrect input
-        if confirm == 'true':
-            if hasattr( request.user , 'khanevar'):
-                request.user.khanevar.phone_number = phone_number
-                request.user.khanevar.save()
-            elif hasattr( request.user , 'edari'):
-                request.user.edari.phone_number = phone_number
-                request.user.edari.save()
-            elif hasattr( request.user , 'tegari'):
-                request.user.tegari.phone_number = phone_number
-                request.user.tegari.save()
 
-        return Response({"status":True}, status=status.HTTP_200_OK)
+        if hasattr( request.user , 'khanevar'):
+            print(request.user.khanevar.code , code)
+            if str(request.user.khanevar.code) == code:
+                if self.LessThanOneMinute(timezone.now(), request.user.khanevar.code_time):
+                    request.user.khanevar.phone_number = phone_number
+                    request.user.khanevar.save()
+                    return Response({"status":True}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"status":False, "error":"140"}, status=status.HTTP_200_OK)  # more than one minute
+            else:
+                return Response({"status":False, "error":"141"}, status=status.HTTP_200_OK) # incorrect code
+
+        elif hasattr( request.user , 'edari'):
+            print(request.user.edari.code , code)
+            if str(request.user.edari.code) == code:
+                if self.LessThanOneMinute(timezone.now(), request.user.edari.code_time):
+                    request.user.edari.phone_number = phone_number
+                    request.user.edari.save()
+                    return Response({"status":True}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"status":False, "error":"140"}, status=status.HTTP_200_OK)  # more than one minute
+            else:
+                return Response({"status":False, "error":"141"}, status=status.HTTP_200_OK) # incorrect code
+        elif hasattr( request.user , 'tegari'):
+            print(request.user.tegari.code , code)
+            if str(request.user.tegari.code) == code:
+                if self.LessThanOneMinute(timezone.now(), request.user.tegari.code_time):
+                    request.user.tegari.phone_number = phone_number
+                    request.user.tegari.save()
+                    return Response({"status":True}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"status":False, "error":"140"}, status=status.HTTP_200_OK)  # more than one minute
+            else:
+                return Response({"status":False, "error":"141"}, status=status.HTTP_200_OK) # incorrect code
+
+        # return Response({"status":True}, status=status.HTTP_200_OK)
 
 
 

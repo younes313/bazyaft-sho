@@ -1,9 +1,32 @@
 from rest_framework import serializers
 # from rest_framework.exceptions import ValidationError
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 # from user.models import Khanevar , Edari , Tegari , Order
 
 from user.models import Order , OrderHistory
+
+
+class GetDriverInfoSerializer(serializers.Serializer):
+
+    class Meta:
+        model = User
+
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+
+        representation['fullname'] = instance.get_full_name()
+
+        if hasattr(instance , 'drivermodel'):
+            representation['phone_number'] = instance.drivermodel.phone_number
+            representation['coins'] = instance.drivermodel.coins
+            representation['order_history'] = len(OrderHistory.objects.filter(driver = instance))
+            representation['order_in_progress'] = len(Order.objects.filter(driver = instance))
+
+        return representation
+
+
+
 
 
 class HistorySerializer(serializers.ModelSerializer):
