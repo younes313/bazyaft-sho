@@ -65,8 +65,15 @@ class History(APIView):
 class CodeStatus(APIView):
 
     def LessThanOneMinute(self, now, generated_time):
+        # if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
+        #     if generated_time.minute == now.minute:
+        #         return True
+        #     elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
+        #         return True
+        # return False
+
         if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
-            if generated_time.minute == now.minute:
+            if  now.minute - generated_time.minute < 5:
                 return True
             elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
                 return True
@@ -402,8 +409,14 @@ class GetTokenPhonenumber(APIView):
 class GetTokenPhone(APIView):
 
     def LessThanOneMinute(self, now, generated_time):
+        # if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
+        #     if generated_time.minute == now.minute:
+        #         return True
+        #     elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
+        #         return True
+        # return False
         if generated_time.year == now.year and generated_time.month == now.month and generated_time.day == now.day and generated_time.hour == now.hour:
-            if generated_time.minute == now.minute:
+            if  now.minute - generated_time.minute < 5:
                 return True
             elif (now.minute - generated_time.minute) == 1  and  (now.second < generated_time.second):
                 return True

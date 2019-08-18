@@ -43,7 +43,7 @@ class GetUserInfoSerializer(serializers.Serializer):
             representation['location'] = instance.tegari.location
             representation['type'] = instance.tegari.type
 
-        
+
         return representation
 
 

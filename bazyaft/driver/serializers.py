@@ -35,6 +35,19 @@ class HistorySerializer(serializers.ModelSerializer):
         model = OrderHistory
         fields = "__all__"
 
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+
+        if instance.driver != None :
+            drv = instance.driver.drivermodel
+            data = {"two_first":drv.car_palette_two_first, "letter":drv.car_palette_letter, "three_last": drv.car_palette_three_last, "city_code":drv.car_palette_city_code  }
+            representation['pelak'] = data
+        else:
+            representation['pelak'] = ""
+        return representation
+
+
 
 class OrderHistorySerializer(serializers.ModelSerializer):
 
