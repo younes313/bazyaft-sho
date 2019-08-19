@@ -7,12 +7,31 @@ from .models import Khanevar , Edari , Tegari , Order, OrderHistory
 coin_for_invite = 1
 
 
+class GetFeedBackSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderHistory
+        exclude = ("location_x", "location_y" , "pelak_melak", "order_status", "user", "driver", )
+
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+
+        if instance.driver != None :
+            drv = instance.driver.drivermodel
+            data = {"two_first":drv.car_palette_two_first, "letter":drv.car_palette_letter, "three_last": drv.car_palette_three_last, "city_code":drv.car_palette_city_code  }
+            representation['pelak'] = data
+        else:
+            representation['pelak'] = ""
+        return representation
+
+
+
+
 class GetUserInfoSerializer(serializers.Serializer):
 
     class Meta:
         model = User
-
-
 
     def to_representation(self, instance):
 
@@ -26,6 +45,7 @@ class GetUserInfoSerializer(serializers.Serializer):
             representation['order_history'] = len(OrderHistory.objects.filter(user = instance))
             representation['order_in_progress'] = len(Order.objects.filter(user = instance))
             representation['location'] = instance.khanevar.location
+            representation['email'] = instance.email
 
         if hasattr(instance , 'edari'):
             representation['phone_number'] = instance.edari.phone_number
@@ -323,7 +343,9 @@ class OrderDriverSerializer(serializers.ModelSerializer):
         if instance.driver != None :
             drv = instance.driver.drivermodel
             data = {"two_first":drv.car_palette_two_first, "letter":drv.car_palette_letter, "three_last": drv.car_palette_three_last, "city_code":drv.car_palette_city_code  }
+            representation['driver_phone_number'] = drv.phone_number
             representation['pelak'] = data
         else:
             representation['pelak'] = ""
+            representation['driver_phone_number'] = ""
         return representation

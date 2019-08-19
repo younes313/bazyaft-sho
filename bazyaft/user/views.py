@@ -45,6 +45,30 @@ def send_sms(phone_number, code):
 
 
 @permission_classes((IsAuthenticated,))
+class GetFeedBack(APIView):
+
+    def get(self, request, format=None):
+        orders = OrderHistory.objects.filter(user=request.user, order_status="done")
+        serializer = GetFeedBackSerializer(orders, many=True)
+        for item in orders:
+            item.order_status = "bye"
+            item.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, requests, format=None):
+        try:
+            id = request.data['id']
+            driver_score = float(request.data['driver_score'])
+            app_score = float(request.data['app_score'])
+            suggest = request.data["suggest"]
+        except:
+            return Response({"status":False, "error":"170"}, status=status.HTTP_200_OK)  #incorrect input
+
+
+
+
+
+@permission_classes((IsAuthenticated,))
 class GetUserInfo(APIView):
 
     def get(self, request, format=None):

@@ -45,6 +45,8 @@ class Order(models.Model):
     give_back_type = models.CharField(max_length=20 , default="")
     order_status = models.CharField(max_length=20 , default="not confirmed")
 
+    date_created = models.DateTimeField(auto_now_add = True)
+
     def calculate_sum(self):
         # + self.kaghaz_moghava + self.felezat + self.ahan_sangin + self.ahan_sabok + self.zayeat_elecronic
         sum = self.alminium +self.pet + self.khoshk + self.daftar_ketab + self.shishe + self.parche + self.naan +self.sayer
