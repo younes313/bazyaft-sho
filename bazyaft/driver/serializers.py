@@ -22,6 +22,7 @@ class GetDriverInfoSerializer(serializers.Serializer):
             representation['coins'] = instance.drivermodel.coins
             representation['order_history'] = len(OrderHistory.objects.filter(driver = instance))
             representation['order_in_progress'] = len(Order.objects.filter(driver = instance))
+            representation["driver_score"] = instance.drivermodel.calculate_driverscore()
 
         return representation
 

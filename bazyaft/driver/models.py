@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from adm.models import FeedBack
 # Create your models here.
 
 
@@ -22,3 +23,13 @@ class DriverModel(models.Model):
 
     code = models.IntegerField(default=0)
     code_time = models.DateTimeField(default=timezone.now )
+
+
+    def calculate_driverscore(self):
+        feedback = FeedBack.objects.filter(driver = self.user)
+        sum = 0.0
+        cnt = 0
+        for item in feedback:
+            sum += item.driver_score
+            cnt += 1
+        return sum/cnt

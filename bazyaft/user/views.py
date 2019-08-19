@@ -17,6 +17,7 @@ from datetime import datetime ,timedelta
 from .models import Order , OrderHistory
 from .serializers import *
 from driver.serializers import HistorySerializer
+from adm.models import FeedBack
 
 from django.utils import timezone
 
@@ -48,14 +49,14 @@ def send_sms(phone_number, code):
 class GetFeedBack(APIView):
 
     def get(self, request, format=None):
-        orders = OrderHistory.objects.filter(user=request.user, order_status="done")
+        orders = OrderHistory.objects.  filter(user=request.user, order_status="done")
         serializer = GetFeedBackSerializer(orders, many=True)
         for item in orders:
             item.order_status = "bye"
             item.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, requests, format=None):
+    def post(self, request, format=None):
         try:
             id = request.data['id']
             driver_score = float(request.data['driver_score'])
@@ -64,7 +65,9 @@ class GetFeedBack(APIView):
         except:
             return Response({"status":False, "error":"170"}, status=status.HTTP_200_OK)  #incorrect input
 
-
+        order = OrderHistory.objects.get(id=id)
+        feedback = FeedBack.objects.create(order=order, user=order.user, driver=order.driver, driver_score=driver_score, app_score=app_score, suggest=suggest)
+        return Response({"status":True}, status=status.HTTP_200_OK)
 
 
 
