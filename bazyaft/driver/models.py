@@ -32,4 +32,6 @@ class DriverModel(models.Model):
         for item in feedback:
             sum += item.driver_score
             cnt += 1
+        if cnt ==0:
+            return 0
         return sum/cnt

@@ -183,72 +183,89 @@ class ConfirmOrEditOrder(APIView):
         serializer = ConfirmOrEditOrderSerializer(data=request.data)
 
         if serializer.is_valid():
-            try:
-                data = serializer.data
-                order = Order.objects.filter(id = data['order_id'] )
-                if serializer.data['status_driver'] == 'edit':
-                    data.pop('status_driver' , None)
-                    data.pop('order_id', None)
-                    order.update(**data)
-                    # order.save()
-                order = order[0]
-                dic = {"status":True}
-                # dic.update(serializer.data)
-                if hasattr(order.user , "khanevar"):
-                    coins = order.calculate_coins()
-                    total_coins = order.user.khanevar.coins + coins
-                    order.coins = coins
-                    if order.give_back_type == "coin":
-                        order.save()
-                        order.user.khanevar.coins += coins
-                        order.user.khanevar.save()
-                        dic.update({"coins": order.coins})
-                    elif order.give_back_type == "bag":
-                        order.bag = total_coins // 10
-                        order.save()
-                        order.user.khanevar.coins = total_coins - order.bag * 10
-                        order.user.khanevar.save()
-                        dic.update({"coins": order.coins})
-                        dic.update({"bag": order.bag})
-
-                elif hasattr(order.user , "edari"):
-                    print(1)
-                    if order.give_back_type == "money":
-                        print(2)
-                        order.money = order.calculate_money()
-                        order.save()
-                        dic.update({"money": order.money})
-
-                elif hasattr(order.user , "tegari"):
-                    print(1)
-                    if order.give_back_type == "money":
-                        print(2)
-                        order.money = order.calculate_money()
-                        order.save()
-                        dic.update({"money": order.money})
-
-                order.order_status = "done"
+            # try:
+            data = serializer.data
+            order = Order.objects.get(id = data['order_id'] )
+            if serializer.data['status_driver'] == 'edit':
+                data.pop('status_driver' , None)
+                data.pop('order_id', None)
+                if data['alminium'] != 0 :
+                        order.alminium = data['alminium']
+                if data['pet'] != 0 :
+                        order.alminium = data['pet']
+                if data['khoshk'] != 0 :
+                        order.alminium = data['khoshk']
+                if data['daftar_ketab'] != 0 :
+                        order.alminium = data['daftar_ketab']
+                if data['shishe'] != 0 :
+                        order.alminium = data['shishe']
+                if data['parche'] != 0 :
+                        order.alminium = data['parche']
+                if data['naan'] != 0 :
+                        order.alminium = data['naan']
+                if data['sayer'] != 0 :
+                        order.alminium = data['sayer']
                 order.save()
+            # order = order[0]
+            dic = {"status":True}
+            # dic.update(serializer.data)
+            if hasattr(order.user , "khanevar"):
+                coins = order.calculate_coins()
+                total_coins = order.user.khanevar.coins + coins
+                order.coins = coins
+                if order.give_back_type == "coin":
+                    order.save()
+                    order.user.khanevar.coins += coins
+                    order.user.khanevar.save()
+                    dic.update({"coins": order.coins})
+                elif order.give_back_type == "bag":
+                    order.bag = total_coins // 10
+                    order.save()
+                    order.user.khanevar.coins = total_coins - order.bag * 10
+                    order.user.khanevar.save()
+                    dic.update({"coins": order.coins})
+                    dic.update({"bag": order.bag})
 
-                order.driver.drivermodel.coins += order.calculate_sum()
-                order.driver.drivermodel.save()
+            elif hasattr(order.user , "edari"):
+                print(1)
+                if order.give_back_type == "money":
+                    print(2)
+                    order.money = order.calculate_money()
+                    order.save()
+                    dic.update({"money": order.money})
 
-                ser = OrderHistorySerializer(order)
-                ser = ser.data
-                usr = User.objects.get(id=ser['user'])
-                ser.pop("user" , None)
-                drv = User.objects.get(id = ser['driver'])
-                ser.pop("driver" , None)
-                ser.pop("id" , None)
+            elif hasattr(order.user , "tegari"):
+                print(1)
+                if order.give_back_type == "money":
+                    print(2)
+                    order.money = order.calculate_money()
+                    order.save()
+                    dic.update({"money": order.money})
 
-                OrderHistory.objects.create(user=usr, driver=drv, **ser)
+            order.order_status = "done"
+            order.save()
 
-                order.delete()
+            order.driver.drivermodel.coins += order.calculate_sum()
+            order.driver.drivermodel.save()
 
-                return Response(dic, status=status.HTTP_200_OK)
+            ser = OrderHistorySerializer(order)
+            ser = ser.data
+            usr = User.objects.get(id=ser['user'])
+            ser.pop("user" , None)
+            drv = User.objects.get(id = ser['driver'])
+            ser.pop("driver" , None)
+            ser.pop("id" , None)
 
-            except:
-                return Response({"status":False, "error":"165"}, status=status.HTTP_200_OK) # incorrect order_id
+
+            his = OrderHistory.objects.create(user=usr, driver=drv, **ser)
+            # Order.objects.get(id = his.id).delete()
+
+            order.delete()
+
+            return Response(dic, status=status.HTTP_200_OK)
+
+            # except:
+                # return Response({"status":False, "error":"165"}, status=status.HTTP_200_OK) # incorrect order_id
         else:
             return Response({"status":False, "error":"169"}, status=status.HTTP_200_OK) # order_id is required
 

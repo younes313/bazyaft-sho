@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'bazyaft.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "db_bazyaft",
+        'NAME': "bazyaft_2",
         "HOST" : '127.0.0.1' ,
         "PORT" : "3306" ,
         "USER" : "root" ,

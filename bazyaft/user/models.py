@@ -62,10 +62,42 @@ class Order(models.Model):
         return sum
 
 
+#
+# class OrderHistory(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     data_done = models.DateTimeField(auto_now_add = True)
 
-class OrderHistory(Order):
+class OrderHistory(models.Model):
+    user = models.ForeignKey(User,related_name="user_history", on_delete=models.SET_NULL ,null=True)
+    driver = models.ForeignKey(User,related_name="driver_history", on_delete=models.SET_NULL , null=True)
+    location_x = models.FloatField(default=0)
+    location_y = models.FloatField(default=0)
+
+    alminium = models.IntegerField(default=0)
+    pet = models.IntegerField(default=0)
+    khoshk = models.IntegerField(default=0)
+    daftar_ketab = models.IntegerField(default=0)
+    shishe = models.IntegerField(default=0)
+    parche = models.IntegerField(default=0)
+    naan = models.IntegerField(default=0)
+    sayer = models.IntegerField(default=0)
+
+    # kaghaz_moghava = models.IntegerField(default=0)
+    # felezat = models.IntegerField(default=0)
+    # ahan_sangin = models.IntegerField(default=0)
+    # ahan_sabok = models.IntegerField(default=0)
+    # zayeat_elecronic = models.IntegerField(default=0)
+
+    coins = models.IntegerField(default=0)
+    bag = models.IntegerField(default=0)
+    money = models.IntegerField(default=0)
+
+    pelak_melak = models.TextField(blank=True)
+    give_back_type = models.CharField(max_length=20 , default="")
+    order_status = models.CharField(max_length=20 , default="not confirmed")
+
+    date_created = models.DateTimeField(auto_now_add = True)
     data_done = models.DateTimeField(auto_now_add = True)
-
 
 
 
