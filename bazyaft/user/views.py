@@ -49,7 +49,7 @@ def send_sms(phone_number, code):
 class GetFeedBack(APIView):
 
     def get(self, request, format=None):
-        orders = OrderHistory.objects.  filter(user=request.user, order_status="done")
+        orders = OrderHistory.objects.filter(user=request.user, order_status="done")
         serializer = GetFeedBackSerializer(orders, many=True)
         for item in orders:
             item.order_status = "bye"

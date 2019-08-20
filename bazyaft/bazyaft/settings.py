@@ -101,30 +101,30 @@ WSGI_APPLICATION = 'bazyaft.wsgi.application'
 #     }
 # }
 
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "db_bazyaft",
-#         "HOST" : '127.0.0.1' ,
-#         "PORT" : "3306" ,
-#         "USER" : "root" ,
-#         "PASSWORD" : "Younes313!" ,
-#     }
-# }
-
-
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "Younes313$db_bazyaft",
-        "HOST" : 'Younes313.mysql.pythonanywhere-services.com' ,
+        'NAME': "db_bazyaft",
+        "HOST" : '127.0.0.1' ,
         "PORT" : "3306" ,
-        "USER" : "Younes313" ,
-        "PASSWORD" : "nemoodi!" ,
+        "USER" : "root" ,
+        "PASSWORD" : "Younes313!" ,
     }
 }
+
+
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "Younes313$db_bazyaft",
+#         "HOST" : 'Younes313.mysql.pythonanywhere-services.com' ,
+#         "PORT" : "3306" ,
+#         "USER" : "Younes313" ,
+#         "PASSWORD" : "nemoodi!" ,
+#     }
+# }
 
 
 # Password validation

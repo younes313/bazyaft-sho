@@ -16,10 +16,39 @@ from .models import Items
 
 
 @permission_classes((AllowAny,))
-class HasUpdate(APIView):
+class DriverHasUpdate(APIView):
+    last_version = '1.1'
 
-    def get(self, request, format=None):
-        return Response({"status":False}, status=status.HTTP_200_OK)
+    def post(self, request, format=None):
+        try:
+            version = request.data['version']
+        except:
+            return Response({'status':False, 'error':"170"}, status=status.HTTP_200_OK)  #incorrect input
+
+        if version == self.last_version:
+            return Response({'status':True, 'need_update':False}, status=status.HTTP_200_OK)
+        else:
+            return Response({'status':True, 'need_update':True}, status=status.HTTP_200_OK)
+
+
+
+
+
+@permission_classes((AllowAny,))
+class UserHasUpdate(APIView):
+    last_version = '1.1'
+
+    def post(self, request, format=None):
+        try:
+            version = request.data['version']
+        except:
+            return Response({'status':False, 'error':"170"}, status=status.HTTP_200_OK)  #incorrect input
+
+        if version == self.last_version:
+            return Response({'status':True, 'need_update':False}, status=status.HTTP_200_OK)
+        else:
+            return Response({'status':True, 'need_update':True}, status=status.HTTP_200_OK)
+
 
 
 @permission_classes((AllowAny,))
